@@ -1,0 +1,11 @@
+model: "Sun Odyssey 42"
+loa_m: 12.8
+beam_m: 4.1
+cabins: 3
+engine_hp: 54
+water_l: 330
+fuel_l: 200
+checklists:
+  - before_departure
+  - anchoring
+  - marina_manoeuvre
