@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"day": 1},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.4570, 43.4980],
+          [16.2093, 43.3934]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"day": 2},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.2093, 43.3934],
+          [16.1699, 43.4401],
+          [16.2514, 43.5169]
+        ]
+      }
+    }
+  ]
+}
