@@ -105,6 +105,8 @@ async function init(){
       if(p.name) m.bindPopup(`<strong>${p.name}</strong>`);
     });
   }
+
+  renderGallery();
 }
 
 // GALLERY
