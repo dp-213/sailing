@@ -40,6 +40,21 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     }
+    .crew-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 0.5rem;
+    }
+    .crew-card {
+      background: #f7fafd;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 1rem;
+      text-align: center;
+      flex: 1 1 180px;
+    }
   </style>
 </head>
 <body>
@@ -57,6 +72,7 @@
 <script src="js/app.js"></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
+    if (window.renderCrew) window.renderCrew();
     if (window.renderGallery) window.renderGallery();
   });
 </script>
