@@ -1,4 +1,10 @@
 items:
+ w13ik9-codex/refactor-github-pages-site-structure
+  - url: "https://placehold.co/600x400?text=Stari+Grad"
+    caption: "Stari Grad Hafen"
+    credit: "Platzhalter"
+
   - url: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Stari_Grad%2C_Hvar.jpg"
     caption: "Stari Grad Hafen"
     credit: "Wikimedia"
+ main
