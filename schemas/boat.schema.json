@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["model", "loa_m", "beam_m", "cabins", "engine_hp", "water_l", "fuel_l", "checklists"],
+  "properties": {
+    "model": {"type": "string"},
+    "loa_m": {"type": "number", "exclusiveMinimum": 0},
+    "beam_m": {"type": "number", "exclusiveMinimum": 0},
+    "cabins": {"type": "integer", "minimum": 1},
+    "engine_hp": {"type": "integer", "minimum": 1},
+    "water_l": {"type": "integer", "minimum": 0},
+    "fuel_l": {"type": "integer", "minimum": 0},
+    "checklists": {
+      "type": "array",
+      "items": {"type": "string", "enum": ["before_departure", "anchoring", "marina_manoeuvre"]}
+    }
+  }
+}
