@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "day",
+    "title",
+    "date_label",
+    "distance_nm",
+    "from_place_id",
+    "to_place_id",
+    "stops_place_ids",
+    "anchor_info",
+    "booking_tips",
+    "images"
+  ],
+  "properties": {
+    "day": {"type": "integer"},
+    "title": {"type": "string"},
+    "date_label": {"type": "string"},
+    "distance_nm": {"type": "number", "exclusiveMinimum": 0},
+    "from_place_id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "to_place_id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "stops_place_ids": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[a-z0-9-]+$"}
+    },
+    "anchor_info": {
+      "type": "object",
+      "required": ["depth_m", "seabed"],
+      "properties": {
+        "depth_m": {"type": "number"},
+        "seabed": {"type": "string"},
+        "swell": {"type": "string"},
+        "protection_from": {"type": "string"}
+      }
+    },
+    "booking_tips": {"type": "array", "items": {"type": "string"}},
+    "images": {"type": "array", "items": {"type": "string", "format": "uri"}}
+  }
+}
