@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "title",
+    "subtitle",
+    "dates",
+    "start_iso",
+    "start_marina",
+    "boat_ref",
+    "map_defaults",
+    "contact_email",
+    "languages",
+    "days"
+  ],
+  "properties": {
+    "title": {"type": "string"},
+    "subtitle": {"type": "string"},
+    "dates": {"type": "string"},
+    "start_iso": {"type": "string", "format": "date-time"},
+    "start_marina": {"type": "string"},
+    "boat_ref": {"type": "string"},
+    "map_defaults": {
+      "type": "object",
+      "required": ["lat", "lng", "zoom"],
+      "properties": {
+        "lat": {"type": "number", "minimum": -90, "maximum": 90},
+        "lng": {"type": "number", "minimum": -180, "maximum": 180},
+        "zoom": {"type": "number"}
+      }
+    },
+    "contact_email": {"type": "string", "format": "email"},
+    "languages": {"type": "array", "items": {"type": "string"}},
+    "days": {"type": "array", "items": {"type": "integer"}}
+  }
+}
