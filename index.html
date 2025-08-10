@@ -1,79 +1,315 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Segeltörn</title>
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Playfair+Display:400,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-1A4eK2ai8rk5soHADhWxEE5wwbHLE8s+3oUfsYH+uwc=" crossorigin="">
-  <style>
-    body {font-family:'Montserrat',sans-serif;margin:0;color:#333;background:#fdfdfd;line-height:1.6;}
-    h1,h2,h3 {font-family:'Playfair Display',serif;margin:0 0 1rem;}
-    header {background:url('https://upload.wikimedia.org/wikipedia/commons/1/1c/%C5%A0olta_Maslinica_Hrvatska_Uvala_%C5%A0e%C5%A1ula_2019_08a.jpg') center/cover no-repeat;color:white;text-align:center;padding:80px 20px;position:relative;}
-    header::after {content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.35);}
-    header h1,header p {position:relative;}
-    .top-nav {display:flex;flex-wrap:wrap;justify-content:center;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:0.5rem 0;position:sticky;top:0;z-index:1000;}
-    .top-nav a {margin:0 10px;padding:0.5rem 0.75rem;color:#0077b6;text-decoration:none;font-weight:bold;font-size:0.9rem;}
-    .top-nav a.disabled {opacity:0.3;pointer-events:none;}
-    .map-container {height:420px;margin:0 auto;}
-    .section {max-width:900px;margin:2rem auto;padding:1.5rem;background:#fff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
-    .leaflet-popup-content-wrapper {
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dalmatien per Segelyacht – Genuss &amp; Abenteuer</title>
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Playfair+Display:400,700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    color: #333;
+    background: #fdfdfd;
+  }
+  header {
+    background: url("https://upload.wikimedia.org/wikipedia/commons/1/1c/%C5%A0olta_Maslinica_Hrvatska_Uvala_%C5%A0e%C5%A1ula_2019_08a.jpg") center/cover no-repeat;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+    position: relative;
+  }
+  header::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+  }
+  header h1 {
+    position: relative;
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    margin: 0;
+  }
+  header p {
+    position: relative;
+    font-size: 1.2rem;
+    margin-top: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  nav.top-nav {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    background: #0077b6;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+  nav.top-nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 15px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 4px;
+  }
+  nav.top-nav a:hover {
+    background: #005f8d;
+  }
+  section {
+    padding: 2rem 1.2rem;
+    max-width: 900px;
+    margin: auto;
+  }
+  section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .day-section {
+    margin-bottom: 2.5rem;
+    background: #fafafa;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+  .day-section h3 {
+    margin-top: 0;
+    font-size: 1.6rem;
+    color: #333;
+  }
+  .day-section p {
+    margin: 0.6rem 0;
+  }
+  .schedule {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  ul.skipper {
+    list-style: none;
+    padding-left: 0;
+    margin: 0.6rem 0;
+    font-size: 0.9rem;
+    background: #eef6ff;
+    border-left: 4px solid #0077b6;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+  }
+  ul.skipper li {
+    margin-bottom: 0.4rem;
+  }
+  .image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 0.6rem;
+  }
+  .image-grid img {
+    width: calc(50% - 4px);
+    border-radius: 6px;
+    height: auto;
+  }
+  /* Map container styling */
+  .map-container {
+    margin: 2rem auto;
+    max-width: 900px;
+  }
+  .map-container iframe {
+    width: 100%;
+    height: 450px;
+    border: 0;
+    border-radius: 8px;
+  }
+  @media (max-width: 600px) {
+    header h1 {
+      font-size: 2rem;
     }
-    .leaflet-popup-content {
-      font-family: 'Montserrat', sans-serif;
+    header p {
       font-size: 1rem;
-      color: #222;
     }
-    .leaflet-marker-icon {
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    .day-section h3 {
+      font-size: 1.3rem;
     }
-    .leaflet-interactive {
-      cursor: pointer;
+    .image-grid img {
+      width: 100%;
     }
-    .leaflet-control-zoom {
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .leaflet-container {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    }
-    .crew-card img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 0.5rem;
-    }
-    .crew-card {
-      background: #f7fafd;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      padding: 1rem;
-      text-align: center;
-      flex: 1 1 180px;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-<header id="trip-header">
-  <h1 id="trip-title"></h1>
-  <p id="trip-subtitle"></p>
-  <p id="countdown"></p>
+<header>
+  <h1>Segeltörn Dalmatien</h1>
+  <p>Eine Woche Dolce Vita auf See – Inselhopping zwischen Šolta, Trogir, Hvar &amp; Brač</p>
 </header>
-<nav id="itinerary-nav" class="top-nav"></nav>
-<div id="map" class="map-container"></div>
-<div id="itinerary"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-Sm1t2oibaaJG8bqOP9w5QjFAD4ccV6b3C047D08+j8M=" crossorigin=""></script>
-<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
-<script src="js/app.js"></script>
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    if (window.renderGallery) window.renderGallery();
-  });
-</script>
+
+<nav class="top-nav">
+  <a href="#tag1">Tag 1</a>
+  <a href="#tag2">Tag 2</a>
+  <a href="#tag3">Tag 3</a>
+  <a href="#tag4">Tag 4</a>
+  <a href="#tag5">Tag 5</a>
+  <a href="#tag6">Tag 6</a>
+  <a href="#tag7">Tag 7</a>
+  <a href="#alternativen">Alternativen</a>
+  <a href="#service">Service</a>
+</nav>
+
+<section class="map-container">
+  <!-- Google Maps embed showing the Dalmatian sailing area -->
+  <iframe src="https://maps.google.com/maps?q=43.45,16.35&z=8&output=embed" allowfullscreen=""></iframe>
+</section>
+
+<section id="tag1" class="day-section">
+  <h3>Tag 1 – Anreise &amp; Šešula</h3>
+  <p class="schedule">15:00 Check-in • 17:00 Ablegen • 18:30 Ankern • 20:00 Dinner</p>
+  <p>Nach dem Check‑in in der Marina Zenta (Split) heißt es Segel setzen. Wir fahren Richtung Šolta und werfen im geschützten Naturhafen <strong>Šešula</strong> den Anker. Die Bucht ist umgeben von Pinien und hat ein einladendes Restaurant – ein idealer Start in die Woche. Schwimmen, relaxen, Sonnenuntergang schauen und dann zum Abendessen im Restaurant <a href="https://www.google.com/maps/search/Restaurant+Sismis+Solta">Šišmiš</a>.</p>
+  <ul class="skipper">
+    <li>Distanz: 13 sm (Marina Zenta → Šešula)</li>
+    <li>Koordinaten: Start 43.4980 N, 16.4570 E • Ziel 43.3934 N, 16.2093 E</li>
+    <li>Ankergrund: Sand &amp; Seegras, Tiefe 5–10 m, Bojen verfügbar</li>
+    <li>Windschutz: gut bei allen Winden, Anker muss auf Sand greifen</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1c/%C5%A0olta_Maslinica_Hrvatska_Uvala_%C5%A0e%C5%A1ula_2019_08a.jpg" alt="Šešula‑Bucht" />
+    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=60" alt="Sonnenuntergang auf dem Meer" />
+  </div>
+</section>
+
+<section id="tag2" class="day-section">
+  <h3>Tag 2 – Blaue Lagune &amp; Trogir</h3>
+  <p class="schedule">07:00 Ablegen • 08:30 Ankern • 14:00 Weiterfahrt • 16:30 Anlegen</p>
+  <p>Früher Start zur <strong>Blauen Lagune</strong> zwischen Drvenik Veli und Krknjaši: türkisblaues Wasser und weißer Sand laden zum Schwimmen und Schnorcheln ein. Vormittags ist die Lagune noch ruhig, später kommen Ausflugsboote – rechtzeitig weiter geht es zur UNESCO‑Stadt <strong>Trogir</strong>. Dort schlendern wir am Nachmittag durch die verwinkelten Gassen und lassen den Abend in einer traditionellen Konoba ausklingen, z.B. <a href="https://www.google.com/maps/search/Konoba+TRS+Trogir">Konoba TRS</a>.</p>
+  <ul class="skipper">
+    <li>Distanz: 14 sm (Šešula → Blaue Lagune → Trogir)</li>
+    <li>Blaue Lagune: 43.4401 N, 16.1699 E – Sandgrund; möglichst vor 10 Uhr ankommen</li>
+    <li>Trogir: 43.5169 N, 16.2514 E – UNESCO‑Altstadt &amp; Marina Baotić</li>
+    <li>Windschutz: Lagune offen nach Westen; Trogir gut geschützt</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Veli_Budikovac_Blue_Lagoon.jpg" alt="Blaue Lagune" />
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Trogir%2C_Croatia.jpg" alt="Trogir Altstadt" />
+  </div>
+</section>
+
+<section id="tag3" class="day-section">
+  <h3>Tag 3 – Smokvina &amp; Pakleni‑Inseln</h3>
+  <p class="schedule">08:00 Ablegen • 10:00 Mittagsanker • 15:00 Pakleni</p>
+  <p>Von Trogir segeln wir an die Südküste von Brač und werfen den Anker in der <strong>Smokvina‑Bucht</strong> – glasklares Wasser, Pinienduft und karibisches Flair. Mittags geht es weiter zu den Pakleni‑Inseln. Wir machen an einer Boje in der <strong>Vinogradišće‑Bucht</strong> fest, ein berühmter Treffpunkt mit Beachbars und exzellentem Essen (z.B. <a href="https://www.google.com/maps/search/Zori+Timeless+Hvar">Zori Timeless</a>). Abends lohnt sich ein Abstecher nach Hvar‑Stadt per Wassertaxi.</p>
+  <ul class="skipper">
+    <li>Distanz: 25 sm (Trogir → Smokvina → Pakleni)</li>
+    <li>Smokvina: ca. 43.320 N, 16.370 E – Sand/Seegras, 4–8 m Tiefe</li>
+    <li>Vinogradišće: 43.1580 N, 16.3903 E – Bojenpflicht; Heckleinen</li>
+    <li>Windschutz: Vinogradišće schlecht bei Südwind; sonst gut</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Hvar_town_and_Pakleni_islands.jpg" alt="Pakleni‑Inseln" />
+    <img src="https://images.unsplash.com/photo-1505731160312-d2e55c593192?auto=format&fit=crop&w=600&q=60" alt="Segelyacht in der Bucht" />
+  </div>
+</section>
+
+<section id="tag4" class="day-section">
+  <h3>Tag 4 – Lučišća &amp; Stari Grad (Hvar)</h3>
+  <p class="schedule">09:00 Ablegen • 10:30 Badepause • 14:00 Ankunft Stari Grad</p>
+  <p>Wir segeln die Nordküste von Hvar entlang und legen eine Badepause in der traumhaften <strong>Lučišća‑Bucht</strong> ein. Danach fahren wir ins historische <strong>Stari Grad</strong>, dessen landwirtschaftliche Ebene seit dem 4. Jh. v. Chr. von Griechen bebaut wird und heute UNESCO‑Welterbe ist. Abends genießt man hier Fisch und lokale Weine, z.B. im <a href="https://www.google.com/maps/search/Kod+Damira+Stari+Grad">Kod Damira</a>.</p>
+  <ul class="skipper">
+    <li>Distanz: 12 sm (Pakleni → Lučišća → Stari Grad)</li>
+    <li>Lučišća: 43.163 N, 16.653 E – Sand &amp; Kies, 5–9 m</li>
+    <li>Stari Grad: 43.1845 N, 16.5847 E – Moorings in der Marina</li>
+    <li>Windschutz: Stari Grad gut gegen Bora &amp; Jugo</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Stari_Grad%2C_Hvar.jpg" alt="Stari Grad Hafen" />
+    <img src="https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=600&q=60" alt="Hvar Küste" />
+  </div>
+</section>
+
+<section id="tag5" class="day-section">
+  <h3>Tag 5 – Lovrečina &amp; Milna (Brač)</h3>
+  <p class="schedule">08:30 Ablegen • 10:30 Lovrečina • 15:30 Milna</p>
+  <p>Wir überqueren den Hvar‑Kanal Richtung Brač und machen Badestopp in der <strong>Lovrečina‑Bucht</strong> mit ihrem langen Sandstrand und historischen Ruinen. Nachmittags fahren wir nach <strong>Milna</strong>, dem „Kanal von Brač“, wo uns hübsche Uferpromenaden, Bars und gemütliche Cafés erwarten. Ideal, um Proviant und Wasser nachzufüllen.</p>
+  <ul class="skipper">
+    <li>Distanz: 20 sm (Stari Grad → Lovrečina → Milna)</li>
+    <li>Lovrečina: 43.354 N, 16.564 E – flacher Sand, 3–6 m</li>
+    <li>Milna: 43.3260 N, 16.4488 E – Marina Vlaska &amp; ACI</li>
+    <li>Windschutz: gut in der Marina; bei Bora lieber früh da sein</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Milna_Brac.jpg" alt="Milna Ufer" />
+    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=60" alt="Sandstrand Lovrečina" />
+  </div>
+</section>
+
+<section id="tag6" class="day-section">
+  <h3>Tag 6 – Bobovišća &amp; Brač</h3>
+  <p class="schedule">10:00 Ablegen • 12:00 Bobovišća • 18:00 Sonnenuntergang</p>
+  <p>Nur wenige Seemeilen entfernt liegt die malerische <strong>Bobovišća‑Bucht</strong>. Hier ankern wir zwischen Fischerbooten und Villen, erkunden das kleine Dorf zu Fuß und genießen einen ruhigen Abend. Ein perfekter Ort, um den Segelurlaub ausklingen zu lassen.</p>
+  <ul class="skipper">
+    <li>Distanz: 5 sm (Milna → Bobovišća)</li>
+    <li>Koordinaten: 43.35244 N, 16.45901 E – Bojenanlage, Tiefe 8–20 m</li>
+    <li>Windschutz: gut bei West- &amp; Südwind; offen nach Norden</li>
+    <li>Anker: moorings (Manta Ray) vorhanden; alternativ frei ankern</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Bobovisce_Brac.jpg" alt="Bobovišća Bucht" />
+    <img src="https://images.unsplash.com/photo-1504609813442-a8924e83f76e?auto=format&fit=crop&w=600&q=60" alt="Abendstimmung im Hafen" />
+  </div>
+</section>
+
+<section id="tag7" class="day-section">
+  <h3>Tag 7 – Nečujam &amp; Rückkehr nach Split</h3>
+  <p class="schedule">09:00 Ankerlichten • 11:00 Nečujam • 15:00 Rückkehr Split</p>
+  <p>Am letzten Tag besuchen wir die weite <strong>Nečujam‑Bucht</strong> auf Šolta. Nach einem letzten Sprung ins Meer und einem Lunch an Bord geht es zurück zur Marina Zenta in Split. Ihr habt Zeit, das Boot in Ruhe zu packen und den Abend an der Riva von Split ausklingen zu lassen.</p>
+  <ul class="skipper">
+    <li>Distanz: 16 sm (Bobovišća → Nečujam → Split)</li>
+    <li>Nečujam: 43.3842 N, 16.3267 E – großer Ankerplatz, Tiefe 6–10 m</li>
+    <li>Split: Marina Zenta – rechtzeitig zum Tanken &amp; Check‑out (bis 17:00 Uhr)</li>
+    <li>Windschutz: Nečujam gut, jedoch offen bei Nordwind</li>
+  </ul>
+  <div class="image-grid">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Solta%2C_Necujam.jpg" alt="Nečujam Bucht" />
+    <img src="https://images.unsplash.com/photo-1525059337994-1ca7d3f24a4a?auto=format&fit=crop&w=600&q=60" alt="Split Altstadt" />
+  </div>
+</section>
+
+<section id="alternativen" class="day-section">
+  <h3>Alternativen &amp; Ausflüge</h3>
+  <p>Je nach Wind und Laune könnt ihr folgende Ziele ansteuern:</p>
+  <ul>
+    <li><strong>Vrboska (Hvar)</strong> – Kanäle &amp; kleine Brücken, „Mini‑Venedig“. <a href="https://www.google.com/maps/search/Vrboska+Hvar">Karte</a></li>
+    <li><strong>Uvala Tiha (Hvar)</strong> – idyllische Bucht für einen ruhigen Nachmittag.</li>
+    <li><strong>Lovrećina Strand (Brač)</strong> – besonders schön am Morgen.</li>
+    <li><strong>Vis &amp; Komiža</strong> – für einen längeren Schlag: charmantes Fischerdorf &amp; Blaue Grotte (Biševo).</li>
+  </ul>
+</section>
+
+<section id="service" class="day-section">
+  <h3>Service &amp; Sicherheit</h3>
+  <p>Alle wichtigen Kontaktinformationen findet ihr auf einen Blick:</p>
+  <ul>
+    <li><strong>Notruf Europa:</strong> 112</li>
+    <li><strong>Seenotrettung:</strong> 195 (Kroatien)</li>
+    <li><strong>Gesundheitszentren:</strong> Hvar &amp; Brač verfügen über Gesundheitsstationen mit Helikopterdienst nach Split【789849050446669†L79-L82】.</li>
+    <li><strong>Allergie &amp; Ernährung:</strong> Bitte immer beim Bestellen auf Nussallergie und vegetarische Vorlieben hinweisen.</li>
+    <li><strong>Reservierungen:</strong> Bojen in Vinogradišće, Bobovišća und Šešula sowie Liegeplätze in Trogir und Stari Grad vorab reservieren.</li>
+  </ul>
+</section>
+
+<!-- Quellen: Die Informationen und geografischen Angaben stammen aus Recherche über Segelreviere in Kroatien sowie folgenden Quellen: 
+  – Beschreibung und Sandgrund der Blauen Lagune【867698324806975†L124-L133】
+  – Hinweis auf touristische Beliebtheit der Blauen Lagune【867698324806975†L199-L208】
+  – Historischer Plan und Architektur Trogirs【913230208369410†L408-L416】
+  – Geschichte der Ebene von Stari Grad und UNESCO-Status【551053918673019†L177-L188】
+  – Gesundheitsversorgung und Helikopterdienst【789849050446669†L79-L82】
+  – Details zur Bobovišća-Bucht und Moorings【87254928964580†L108-L121】
+  – Ankerinformation zu Nečujam【651365326442042†L210-L218】
+  – Vinogradišće-Bucht: Schutz und Bojen【789532426904279†L108-L124】
+-->
+
 </body>
 </html>
