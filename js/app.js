@@ -63,13 +63,40 @@ async function init(){
         const h=document.createElement('h2');
         h.textContent=`Tag ${day} – ${md.data.title}`;
         sec.appendChild(h);
-        const meta=document.createElement('p');
-        meta.innerHTML=`<strong>Distanz:</strong> ${md.data.distance_nm} sm`;
+        const meta=document.createElement('div');
+        meta.innerHTML = `
+          <strong>Datum:</strong> ${md.data.date_label || ''}<br>
+          <strong>Distanz:</strong> ${md.data.distance_nm} sm<br>
+          <strong>Von:</strong> ${md.data.from_place_id || ''} <strong>→</strong> ${md.data.to_place_id || ''}<br>
+          <strong>Stops:</strong> ${(md.data.stops_place_ids && md.data.stops_place_ids.length) ? md.data.stops_place_ids.join(', ') : 'keine'}<br>
+          <strong>Ankerinfo:</strong> Tiefe ${md.data.anchor_info?.depth_m || '-'} m, Grund: ${md.data.anchor_info?.seabed || '-'}, Schutz: ${md.data.anchor_info?.protection_from || '-'}<br>
+        `;
+        meta.style.marginBottom = '1em';
         sec.appendChild(meta);
+        if(md.data.images && md.data.images.length) {
+          const img = document.createElement('img');
+          img.src = md.data.images[0];
+          img.alt = md.data.title;
+          img.style.width = '100%';
+          img.style.maxWidth = '500px';
+          img.style.borderRadius = '8px';
+          img.style.marginBottom = '1em';
+          sec.appendChild(img);
+        }
         const body=marked.parse(md.body);
         const div=document.createElement('div');
         div.innerHTML=body;
         sec.appendChild(div);
+        // Skipper-Tipps und Crew-Erlebnis hervorheben
+        if(md.body.includes('Skipper-Tipps:')) {
+          const tips = document.createElement('div');
+          tips.innerHTML = '<strong>Skipper-Tipps:</strong> ' + md.body.split('Skipper-Tipps:')[1].split('\n')[1];
+          tips.style.background = '#e0f7fa';
+          tips.style.padding = '0.7em 1em';
+          tips.style.borderRadius = '6px';
+          tips.style.margin = '1em 0';
+          sec.appendChild(tips);
+        }
         container.appendChild(sec);
       } else {
         link.classList.add('disabled');
@@ -149,61 +176,6 @@ async function renderGallery() {
   }
   document.body.appendChild(container);
 }
-
-// CREW
-async function renderCrew() {
-  const crew = await fetchYAML('content/crew/crew.yaml');
-  if (!crew || !crew.members || !crew.members.length) return;
-  const section = document.createElement('section');
-  section.className = 'section';
-  section.id = 'crew';
-  const h = document.createElement('h2');
-  h.textContent = 'Crew';
-  section.appendChild(h);
-  const grid = document.createElement('div');
-  grid.style.display = 'flex';
-  grid.style.flexWrap = 'wrap';
-  grid.style.gap = '2rem';
-  crew.members.forEach(member => {
-    const card = document.createElement('div');
-    card.style.flex = '1 1 180px';
-    card.style.background = '#f7fafd';
-    card.style.borderRadius = '10px';
-    card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
-    card.style.padding = '1rem';
-    card.style.textAlign = 'center';
-    if (member.photo_url) {
-      const img = document.createElement('img');
-      img.src = member.photo_url;
-      img.alt = member.name;
-      img.style.width = '80px';
-      img.style.height = '80px';
-      img.style.objectFit = 'cover';
-      img.style.borderRadius = '50%';
-      img.style.marginBottom = '0.5rem';
-      card.appendChild(img);
-    }
-    const name = document.createElement('div');
-    name.textContent = member.name;
-    name.style.fontWeight = 'bold';
-    card.appendChild(name);
-    const role = document.createElement('div');
-    role.textContent = member.role;
-    role.style.color = '#0077b6';
-    card.appendChild(role);
-    if (member.notes) {
-      const notes = document.createElement('div');
-      notes.textContent = member.notes;
-      notes.style.fontSize = '0.95em';
-      notes.style.marginTop = '0.5em';
-      card.appendChild(notes);
-    }
-    grid.appendChild(card);
-  });
-  section.appendChild(grid);
-  document.body.insertBefore(section, document.getElementById('map'));
-}
-window.renderCrew = renderCrew;
 
 function renderTimeline(days) {
   const nav = document.getElementById('itinerary-nav');
