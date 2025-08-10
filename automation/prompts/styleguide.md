@@ -1,0 +1,4 @@
+- Sprache: Deutsch
+- Länge: 60–120 Sekunden Lesedauer je Tag
+- Struktur: Zuerst Crew-Erlebnis, dann Skipper-Tipps
+- Links nur zu offiziellen Quellen

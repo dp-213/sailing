@@ -1,0 +1,16 @@
+title: "Dalmatien per Segelyacht"
+subtitle: "Genuss & Abenteuer zwischen Inseln"
+dates: "2025-05-01 bis 2025-05-07"
+start_iso: "2025-05-01T09:00:00+02:00"
+start_marina: "Marina Zenta, Split"
+boat_ref: "sun-odyssey-42"
+map_defaults:
+  lat: 43.45
+  lng: 16.35
+  zoom: 8
+contact_email: "info@example.com"
+languages:
+  - de
+days:
+  - 1
+  - 2
