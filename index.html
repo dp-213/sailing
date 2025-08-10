@@ -17,6 +17,29 @@
     .top-nav a.disabled {opacity:0.3;pointer-events:none;}
     .map-container {height:420px;margin:0 auto;}
     .section {max-width:900px;margin:2rem auto;padding:1.5rem;background:#fff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+    .leaflet-popup-content-wrapper {
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .leaflet-popup-content {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      color: #222;
+    }
+    .leaflet-marker-icon {
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    }
+    .leaflet-interactive {
+      cursor: pointer;
+    }
+    .leaflet-control-zoom {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .leaflet-container {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
   </style>
 </head>
 <body>
@@ -32,5 +55,10 @@
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
 <script src="js/app.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.renderGallery) window.renderGallery();
+  });
+</script>
 </body>
 </html>

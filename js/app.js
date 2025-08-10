@@ -82,8 +82,22 @@ async function init(){
   const route=await fetch('content/map/route.geojson').then(r=>r.json()).catch(()=>null);
   const places=await fetch('content/map/places.json').then(r=>r.json()).catch(()=>null);
   if(route){
-    const poly=L.geoJSON(route,{style:{color:'#0077b6',weight:3}}).addTo(map);
+    const poly=L.geoJSON(route,{
+      style:{color:'#0077b6',weight:4,opacity:0.85},
+      onEachFeature: function (feature, layer) {
+        if(feature.properties && feature.properties.name){
+          layer.bindPopup(`<strong>${feature.properties.name}</strong>`);
+        }
+      }
+    }).addTo(map);
     map.fitBounds(poly.getBounds());
+    // Interaktive Route: Hover hebt hervor
+    poly.on('mouseover', function(e){
+      e.target.setStyle({color:'#023e8a',weight:7});
+    });
+    poly.on('mouseout', function(e){
+      e.target.setStyle({color:'#0077b6',weight:4});
+    });
   }
   if(places){
     places.forEach(p=>{
@@ -93,4 +107,45 @@ async function init(){
   }
 }
 
+// GALLERY
+async function renderGallery() {
+  const gallery = await fetchYAML('content/gallery/gallery.yaml');
+  const container = document.createElement('div');
+  container.className = 'section';
+  const h = document.createElement('h2');
+  h.textContent = 'Galerie';
+  container.appendChild(h);
+  if (gallery && gallery.items && gallery.items.length) {
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(260px, 1fr))';
+    grid.style.gap = '1.5rem';
+    gallery.items.forEach(item => {
+      const fig = document.createElement('figure');
+      fig.style.margin = 0;
+      fig.style.background = '#f7f7f7';
+      fig.style.borderRadius = '8px';
+      fig.style.overflow = 'hidden';
+      fig.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.alt = item.caption;
+      img.style.width = '100%';
+      img.style.display = 'block';
+      img.style.aspectRatio = '3/2';
+      const cap = document.createElement('figcaption');
+      cap.innerHTML = `<strong>${item.caption}</strong><br><small>${item.credit}</small>`;
+      cap.style.padding = '0.5rem 1rem 1rem 1rem';
+      fig.appendChild(img);
+      fig.appendChild(cap);
+      grid.appendChild(fig);
+    });
+    container.appendChild(grid);
+  } else {
+    container.appendChild(document.createTextNode('Keine Bilder vorhanden.'));
+  }
+  document.body.appendChild(container);
+}
+
 init();
+window.renderGallery = renderGallery;
