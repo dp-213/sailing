@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["members"],
+  "properties": {
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "role", "photo_url", "notes"],
+        "properties": {
+          "name": {"type": "string"},
+          "role": {"type": "string"},
+          "photo_url": {"type": "string", "format": "uri"},
+          "notes": {"type": "string"},
+          "dietary": {"type": "string"}
+        }
+      }
+    }
+  }
+}
