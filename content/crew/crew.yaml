@@ -1,0 +1,9 @@
+members:
+  - name: "Anna"
+    role: "Skipperin"
+    photo_url: "https://placehold.co/200x200?text=Anna"
+    notes: "Mag Kaffee"
+  - name: "Ben"
+    role: "Steuermann"
+    photo_url: "https://placehold.co/200x200?text=Ben"
+    notes: "Vegetarier"
