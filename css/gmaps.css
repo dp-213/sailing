@@ -1,0 +1,14 @@
+.gmaps-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;min-height:480px}
+.gmaps-map{min-height:480px;height:60vh;border-radius:12px;border:1px solid #e5e7eb}
+.gmaps-sidebar{display:flex;flex-direction:column;gap:12px}
+.gmaps-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gmaps-controls select,.gmaps-controls button{padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
+.gmaps-controls a{margin-left:auto;text-decoration:none;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px}
+.gmaps-list{margin:0;padding:0;list-style:none;max-height:40vh;overflow:auto;border:1px solid #e5e7eb;border-radius:8px}
+.gmaps-list li{padding:10px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;outline:none}
+.gmaps-list li:last-child{border-bottom:none}
+.gmaps-list li:focus{box-shadow:0 0 0 3px rgba(59,130,246,.45)}
+.gmaps-list li[aria-selected="true"]{background:#f8fafc}
+.gmaps-error{color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;border-radius:8px;padding:8px 10px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width: 900px){.gmaps-layout{grid-template-columns:1fr}.gmaps-map{height:50vh}}
