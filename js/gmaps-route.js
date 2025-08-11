@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  
   // Configuration
   const STOPS = [
     { id:'A', title:'Split (Marina Zenta)',  infoHtml:'Start: Check-in & Briefing', query:'Marina Zenta, Split', lat:43.4980, lng:16.4570 },
@@ -33,6 +34,7 @@
 
   const clearMarkers = () => { markers.forEach(m=>m.setMap(null)); markers.length = 0; };
   const focusMarker = (idx) => {
+  
     const m = markers[idx]; if (!m) return;
     map.panTo(m.getPosition()); map.setZoom(Math.max(map.getZoom(), 12));
     google.maps.event.trigger(m, 'click');
