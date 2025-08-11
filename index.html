@@ -129,7 +129,7 @@
       <h2>Tag 1 – Samstag | Ankommen &amp; Soft Launch (Split)</h2>
       <div class="day-content">
         <ul>
-          <li><strong>Vormittag:</strong> Brunch im <a href="https://goo.gl/maps/nL55YE3bm5mSVgE28" target="_blank">Fig Split</a> oder <a href="https://goo.gl/maps/6yTb2k1ESVAB3fXh6" target="_blank">Brasserie on 7</a>, anschließend Proviant einkaufen und zur Marina Zenta fahren.</li>
+          <li><strong>Vormittag:</strong> Brunch im <a href="https://www.google.com/maps/search/?api=1&query=Fig+Split" target="_blank">Fig Split</a> oder <a href="https://goo.gl/maps/https://www.google.com/maps/search/?api=1&query=Brasserie+on+7" target="_blank">Brasserie on 7</a>, anschließend Proviant einkaufen und zur Marina Zenta fahren.</li>
           <li><strong>Nachmittag:</strong> Check‑in (ab ca. 17:00), Sicherheits‑ &amp; Boots‑Briefing, Gepäck verstauen. Der erste Abend bleibt stressfrei – Übernachtung in der Marina Zenta (kostenlos).</li>
           <li><strong>Dinner fußläufig:</strong> <a href="https://goo.gl/maps/RCaVJZZYU3vF9urr5" target="_blank">Dvor</a> (gehoben, Meerblick) oder <a href="https://goo.gl/maps/atHJiT8e6S3gNgb48" target="_blank">Zora Bila</a>.</li>
         </ul>
@@ -351,5 +351,13 @@
       marker.bindPopup(`<strong>${p.name}</strong>`);
     });
   </script>
+  // Replace goo.gl links with full Google Maps search
+  <script>
+document.querySelectorAll('a[href^="https://goo.gl/maps/"]').forEach(link => {
+    const place = link.textContent.trim();
+    const query = encodeURIComponent(place.replace(/\s+/g, ' '));
+    link.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
+  </script>
+  });
 </body>
 </html>
