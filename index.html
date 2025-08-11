@@ -225,8 +225,7 @@
         </aside>
       </div>
     </section>
-    <!-- Allergy card button -->
-    <button id="allergy-btn" class="allergy-btn" aria-label="Allergiekarte (HR)">Allergiekarte (HR)</button>
+    <!-- Allergy card modal (triggered from info section) -->
     <div id="allergy-modal" class="allergy-modal" aria-hidden="true">
       <div class="allergy-modal-content" role="dialog" aria-modal="true" aria-labelledby="allergy-title">
         <h2 id="allergy-title">Allergiekarte</h2>
@@ -258,7 +257,7 @@
         </ul>
         <div class="info">
           <strong>Highlights &amp; Tipps:</strong>
-          • Zero Stress zum Start: Frauen‑Wohlfühlfaktor ab Minute 1 sicherstellen.  
+          • Entspannter Start: Wohlfühlfaktor für alle ab der ersten Minute – ankommen, runterkommen und genießen.  
           • Marina Zenta liegt in Split und bietet Duschen und sichere Parkplätze.  
         </div>
       </div>
@@ -275,6 +274,7 @@
         </ul>
         <div class="info">
           <strong>Allergie‑Hinweis:</strong> In Kroatien werden Nüsse selten ungefragt verwendet – dennoch immer explizit „No Nut“ oder Allergie angeben.  <br>
+          <button class="allergy-btn" aria-label="Allergiekarte (HR/DE/EN)">Allergiekarte (HR/DE/EN)</button><br>
           <strong>Nautik‑Hinweis:</strong>
           Krknjaši: Der Grund ist gemischt (Sand/Seegras/Fels) – auf Sandflächen ankern, den Anker gut einfahren und Schwojen prüfen; Flachstellen zwischen den Inseln von Süden anfahren. <br>
           Blaue Lagune: Mittags vor 10:00 oder nach 15:30 ansteuern, um der Menge zu entgehen. <br>
@@ -481,13 +481,14 @@
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz_jCzahP0Fg1Ns0i7JonTjoJlzXE59qw&callback=initMap"></script>
   <script>
     // Allergy card modal handling
-    document.getElementById('allergy-btn').addEventListener('click', function() {
-      const modal = document.getElementById('allergy-modal');
-      modal.setAttribute('aria-hidden', 'false');
+    // Attach click handler to all buttons that open the allergy modal
+    document.querySelectorAll('.allergy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.getElementById('allergy-modal').setAttribute('aria-hidden', 'false');
+      });
     });
     document.querySelector('.allergy-close').addEventListener('click', function() {
-      const modal = document.getElementById('allergy-modal');
-      modal.setAttribute('aria-hidden', 'true');
+      document.getElementById('allergy-modal').setAttribute('aria-hidden', 'true');
     });
 
     // Language tab switching for allergy modal
