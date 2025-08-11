@@ -23,6 +23,63 @@
           [16.2514, 43.5169]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {"day": 3},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.2514, 43.5169],
+          [16.0850, 43.3920],
+          [16.2093, 43.3934]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"day": 4},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.2093, 43.3934],
+          [16.3716, 43.1606]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"day": 5},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.3716, 43.1606],
+          [16.5830, 43.1847]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"day": 6},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.5830, 43.1847],
+          [16.4900, 43.3240]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"day": 7},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [16.4900, 43.3240],
+          [16.3530, 43.4030],
+          [16.4570, 43.4980]
+        ]
+      }
     }
   ]
 }
