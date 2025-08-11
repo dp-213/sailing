@@ -1,34 +1,11 @@
 [
-  {
-    "id": "split-zenta",
-    "name": "Split (Zenta)",
-    "coords": [43.4980, 16.4570],
-    "type": "marina",
-    "notes": "Start",
-    "links": []
-  },
-  {
-    "id": "sesula",
-    "name": "Šešula",
-    "coords": [43.3934, 16.2093],
-    "type": "anchorage",
-    "notes": "",
-    "links": []
-  },
-  {
-    "id": "blue-lagoon",
-    "name": "Blaue Lagune",
-    "coords": [43.4401, 16.1699],
-    "type": "anchorage",
-    "notes": "",
-    "links": []
-  },
-  {
-    "id": "trogir",
-    "name": "Trogir",
-    "coords": [43.5169, 16.2514],
-    "type": "town",
-    "notes": "",
-    "links": []
-  }
+  {"id": "split-zenta", "name": "Split (Zenta)", "coords": [43.4980, 16.4570], "type": "marina", "notes": "Start", "links": []},
+  {"id": "sesula", "name": "\u0160e\u0161ula", "coords": [43.3934, 16.2093], "type": "anchorage", "notes": "", "links": []},
+  {"id": "blue-lagoon", "name": "Blaue Lagune", "coords": [43.4401, 16.1699], "type": "anchorage", "notes": "", "links": []},
+  {"id": "trogir", "name": "Trogir", "coords": [43.5169, 16.2514], "type": "town", "notes": "", "links": []},
+  {"id": "velarina", "name": "Vela Rina", "coords": [43.3920, 16.0850], "type": "anchorage", "notes": "", "links": []},
+  {"id": "palmižana", "name": "Palmižana", "coords": [43.1606, 16.3716], "type": "anchorage", "notes": "", "links": []},
+  {"id": "stari-grad", "name": "Stari Grad", "coords": [43.1847, 16.5830], "type": "town", "notes": "", "links": []},
+  {"id": "lucice", "name": "Lu\u010dice", "coords": [43.3240, 16.4900], "type": "anchorage", "notes": "", "links": []},
+  {"id": "necujam", "name": "Nečujam", "coords": [43.4030, 16.3530], "type": "anchorage", "notes": "", "links": []}
 ]
