@@ -129,7 +129,7 @@
       <h2>Tag 1 – Samstag | Ankommen &amp; Soft Launch (Split)</h2>
       <div class="day-content">
         <ul>
-          <li><strong>Vormittag:</strong> Brunch im <a href="https://www.google.com/maps/search/?api=1&query=Fig+Split" target="_blank">Fig Split</a> oder <a href="https://goo.gl/maps/https://www.google.com/maps/search/?api=1&query=Brasserie+on+7" target="_blank">Brasserie on 7</a>, anschließend Proviant einkaufen und zur Marina Zenta fahren.</li>
+          <li><strong>Vormittag:</strong> Brunch im <a href="https://goo.gl/maps/nL55YE3bm5mSVgE28" target="_blank">Fig Split</a> oder <a href="https://goo.gl/maps/6yTb2k1ESVAB3fXh6" target="_blank">Brasserie on 7</a>, anschließend Proviant einkaufen und zur Marina Zenta fahren.</li>
           <li><strong>Nachmittag:</strong> Check‑in (ab ca. 17:00), Sicherheits‑ &amp; Boots‑Briefing, Gepäck verstauen. Der erste Abend bleibt stressfrei – Übernachtung in der Marina Zenta (kostenlos).</li>
           <li><strong>Dinner fußläufig:</strong> <a href="https://goo.gl/maps/RCaVJZZYU3vF9urr5" target="_blank">Dvor</a> (gehoben, Meerblick) oder <a href="https://goo.gl/maps/atHJiT8e6S3gNgb48" target="_blank">Zora Bila</a>.</li>
         </ul>
@@ -351,13 +351,30 @@
       marker.bindPopup(`<strong>${p.name}</strong>`);
     });
   </script>
-  // Replace goo.gl links with full Google Maps search
-  <script>
-document.querySelectorAll('a[href^="https://goo.gl/maps/"]').forEach(link => {
-    const place = link.textContent.trim();
-    const query = encodeURIComponent(place.replace(/\s+/g, ' '));
-    link.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
-  </script>
-  });
+  <!-- Google Maps interactive route -->
+  <section id="route" aria-labelledby="route-heading">
+    <h2 id="route-heading">Interaktive Route</h2>
+    <div class="gmaps-layout">
+      <div id="gmaps-map" class="gmaps-map" role="application" aria-label="Karte mit Segelroute"></div>
+      <aside class="gmaps-sidebar" aria-label="Liste der Stopps">
+        <div class="gmaps-controls">
+          <label for="mode" class="sr-only">Fortbewegungsart</label>
+          <select id="mode" aria-label="Reisemodus">
+            <option value="DRIVING" selected>Boot/Driving</option>
+            <option value="WALKING">Walking</option>
+            <option value="BICYCLING">Bicycling</option>
+            <option value="TRANSIT">Transit</option>
+          </select>
+          <button id="btn-recalc" type="button" aria-label="Route neu berechnen">Neu berechnen</button>
+          <button id="btn-geoloc" type="button" aria-label="Meine Position als Start verwenden">Meine Position</button>
+          <a id="export-link" target="_blank" rel="noopener" aria-label="Route in Google Maps öffnen">In Google Maps öffnen</a>
+        </div>
+        <ul id="stops-list" class="gmaps-list" role="listbox" aria-label="Stopps"></ul>
+        <div id="gmaps-error" class="gmaps-error" role="alert" aria-live="assertive" hidden></div>
+      </aside>
+    </div>
+  </section>
+  <script src="js/gmaps-route.js" defer></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz_jCzahP0Fg1Ns0i7JonTjoJlzXE59qw&callback=initMap"></script>
 </body>
 </html>
