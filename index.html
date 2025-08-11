@@ -62,11 +62,14 @@
       margin: auto;
       padding: 1rem;
     }
+    /* Remove old Leaflet map style (map div removed) */
     #map {
-      width: 100%;
-      height: 380px;
-      margin-bottom: 1.5rem;
-      border-radius: 8px;
+      display: none;
+    }
+
+    /* Adjust Google map height for top placement */
+    .gmaps-map {
+      height: 320px;
     }
     section {
       margin-bottom: 2rem;
@@ -108,6 +111,58 @@
         font-size: 0.9rem;
       }
     }
+
+    /* Allergy card styles */
+    .allergy-btn {
+      display: inline-block;
+      margin: 1rem 0;
+      padding: 0.6rem 1rem;
+      background-color: #0077b6;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .allergy-btn:hover, .allergy-btn:focus {
+      background-color: #005f8e;
+    }
+    .allergy-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+    }
+    .allergy-modal[aria-hidden="false"] {
+      display: flex;
+    }
+    .allergy-modal-content {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .allergy-close {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .allergy-close:hover, .allergy-close:focus {
+      background: #005f8e;
+    }
   </style>
 </head>
 <body>
@@ -125,7 +180,38 @@
     <a href="#day7">Tag 7</a>
   </nav>
   <div class="container">
-    <div id="map"></div>
+    <!-- Google Maps interactive route at top -->
+    <section id="route" aria-labelledby="route-heading">
+      <h2 id="route-heading">Interaktive Route</h2>
+      <div class="gmaps-layout">
+        <div id="gmaps-map" class="gmaps-map" role="application" aria-label="Karte mit Segelroute"></div>
+        <aside class="gmaps-sidebar" aria-label="Liste der Stopps">
+          <div class="gmaps-controls">
+            <label for="mode" class="sr-only">Fortbewegungsart</label>
+            <select id="mode" aria-label="Reisemodus">
+              <option value="DRIVING" selected>Boot/Driving</option>
+              <option value="WALKING">Walking</option>
+              <option value="BICYCLING">Bicycling</option>
+              <option value="TRANSIT">Transit</option>
+            </select>
+            <button id="btn-recalc" type="button" aria-label="Route neu berechnen">Neu berechnen</button>
+            <button id="btn-geoloc" type="button" aria-label="Meine Position als Start verwenden">Meine Position</button>
+            <a id="export-link" target="_blank" rel="noopener" aria-label="Route in Google Maps öffnen">In Google Maps öffnen</a>
+          </div>
+          <ul id="stops-list" class="gmaps-list" role="listbox" aria-label="Stopps"></ul>
+          <div id="gmaps-error" class="gmaps-error" role="alert" aria-live="assertive" hidden></div>
+        </aside>
+      </div>
+    </section>
+    <!-- Allergy card button -->
+    <button id="allergy-btn" class="allergy-btn" aria-label="Allergiekarte (HR)">Allergiekarte (HR)</button>
+    <div id="allergy-modal" class="allergy-modal" aria-hidden="true">
+      <div class="allergy-modal-content" role="dialog" aria-modal="true" aria-labelledby="allergy-title">
+        <h2 id="allergy-title">Alergijska kartica</h2>
+        <p>Imam ozbiljnu alergiju na orašaste plodove i životno opasno reagiram na orašaste i koštuničave plodove. Molim vas pripazite.</p>
+        <button type="button" class="allergy-close" aria-label="Schließen">Schließen</button>
+      </div>
+    </div>
     <!-- Day 1 -->
     <section id="day1">
       <h2>Tag 1 – Samstag | Ankommen &amp; Soft Launch (Split)</h2>
@@ -250,6 +336,7 @@
   ></script>
   <script>
     // Embedded route and places (from repo)
+    /*
     const route = {
       "type": "FeatureCollection",
       "features": [
@@ -352,31 +439,21 @@
       const marker = L.marker([p.coords[0], p.coords[1]]).addTo(map);
       marker.bindPopup(`<strong>${p.name}</strong>`);
     });
+    */
   </script>
-  <!-- Google Maps interactive route -->
-  <section id="route" aria-labelledby="route-heading">
-    <h2 id="route-heading">Interaktive Route</h2>
-    <div class="gmaps-layout">
-      <div id="gmaps-map" class="gmaps-map" role="application" aria-label="Karte mit Segelroute"></div>
-      <aside class="gmaps-sidebar" aria-label="Liste der Stopps">
-        <div class="gmaps-controls">
-          <label for="mode" class="sr-only">Fortbewegungsart</label>
-          <select id="mode" aria-label="Reisemodus">
-            <option value="DRIVING" selected>Boot/Driving</option>
-            <option value="WALKING">Walking</option>
-            <option value="BICYCLING">Bicycling</option>
-            <option value="TRANSIT">Transit</option>
-          </select>
-          <button id="btn-recalc" type="button" aria-label="Route neu berechnen">Neu berechnen</button>
-          <button id="btn-geoloc" type="button" aria-label="Meine Position als Start verwenden">Meine Position</button>
-          <a id="export-link" target="_blank" rel="noopener" aria-label="Route in Google Maps öffnen">In Google Maps öffnen</a>
-        </div>
-        <ul id="stops-list" class="gmaps-list" role="listbox" aria-label="Stopps"></ul>
-        <div id="gmaps-error" class="gmaps-error" role="alert" aria-live="assertive" hidden></div>
-      </aside>
-    </div>
-  </section>
+  <!-- removed duplicate route section at bottom -->
   <script src="js/gmaps-route.js" defer></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz_jCzahP0Fg1Ns0i7JonTjoJlzXE59qw&callback=initMap"></script>
+  <script>
+    // Allergy card modal handling
+    document.getElementById('allergy-btn').addEventListener('click', function() {
+      const modal = document.getElementById('allergy-modal');
+      modal.setAttribute('aria-hidden', 'false');
+    });
+    document.querySelector('.allergy-close').addEventListener('click', function() {
+      const modal = document.getElementById('allergy-modal');
+      modal.setAttribute('aria-hidden', 'true');
+    });
+  </script>
 </body>
 </html>
