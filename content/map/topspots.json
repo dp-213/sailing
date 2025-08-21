@@ -1,62 +1,258 @@
 [
   {
-    "id": "krknjasi",
-    "name": "Blaue Lagune (Krknjaši, Drvenik Veli)",
-    "lat": 43.441675,
-    "lng": 16.176139,
-    "type": "anchorage",
-    "typeLabel": "Ankerbucht · Sand",
-    "bestLight": "vor 10:00 & ab 15:30",
-    "short": "Türkis über hellem Sand – Drohne!",
-    "instagram": "Karibik-Vibes: helles, flaches Sandplateau zwischen Krknjaš Veli & Mali. Drohne top bei ruhiger See.",
-    "skipper": "Mittagsstopp. Sand/Seegras, 3–6 m; auf Sand ankern, Anker gut einfahren. Hochsaison voll → früh/spät. Offen bei N/NE; Übernachtung nicht empfohlen."
+    "id": "krknjasi-blue-lagoon",
+    "name": "Krknjaši – Blaue Lagune (Drvenik Veli)",
+    "type": "bay",
+    "island": "Drvenik Veli",
+    "coords": [43.441700, 16.176100],
+    "instagram": "Türkis wie aus dem Filter – Sandbänke + seichtes, glasklares Wasser. Früh hin (vor 10) für menschenleere Drohnenshots.",
+    "skipper": {
+      "best_use": "Mittagsstopp/Ankern",
+      "anchor_depth_m": "3–6",
+      "holding": "Sand/Seegras – auf Sand zielen, Anker gut einfahren",
+      "wind_protection": "Gut bei N/NE/E; offen bei W–S–SW (Maestral = Schwell)",
+      "notes": "Zwischeninsel-Flachstellen beachten, Tagestrubel ab 10:30. Restaurant-/Bootsverkehr."
+    }
   },
   {
-    "id": "vinogradisce",
-    "name": "Vinogradišće (Palmižana, Pakleni)",
-    "lat": 43.157760,
-    "lng": 16.391320,
-    "type": "anchorage",
-    "typeLabel": "Bojenfeld · Beachclubs",
-    "bestLight": "Mittag bis Sunset",
-    "short": "Pinien, Stege, glasklares Wasser",
-    "instagram": "Smaragdlagune, Holzstege, Beach-Lunch-Vibes (Zori/Laganini).",
-    "skipper": "Bojen begehrt; bei W/SW lieber ACI Palmižana (Nordseite). Wassertaxi nach Hvar. Bei Jugo exponiert."
+    "id": "vela-rina-drvenik-mali",
+    "name": "Vela Rina (Drvenik Mali)",
+    "type": "bay",
+    "island": "Drvenik Mali",
+    "coords": [43.441847, 16.152317],
+    "instagram": "Seltener Sandstrand in Dalmatien: butterweicher Sand, smaragdgrün – Sonnenuntergänge sind hier pures Gold.",
+    "skipper": {
+      "best_use": "Mittagsstopp/Ankern",
+      "anchor_depth_m": "2–10",
+      "holding": "Sand – sehr gut",
+      "wind_protection": "Schutz gegen N/NE/E; offen bei W/SW/S (Maestral/Jugo = Schwell)",
+      "notes": "5 Bojen vor Ort (teils Restaurant). Bei Westschwell nicht übernachten."
+    }
   },
   {
-    "id": "fortica",
-    "name": "Festung Fortica (Španjola), Hvar-Stadt",
-    "lat": 43.174760,
-    "lng": 16.441960,
+    "id": "trogir-old-town",
+    "name": "UNESCO Altstadt Trogir",
     "type": "landmark",
-    "typeLabel": "Aussicht · Landmarke",
-    "bestLight": "Golden Hour & Nacht",
-    "short": "Der Hvar-Postkartenblick",
-    "instagram": "Panorama auf Altstadt & Pakleni. Golden Hour warm; Blue Hour Leuchtkette an der Riva.",
-    "skipper": "Per Wassertaxi erreichbar; kein Ankerplatz."
+    "island": "Festland",
+    "coords": [43.517692, 16.250646],
+    "instagram": "Venezianische Gassen + Loggia + Kathedrale – Golden Hour auf der Riva liefert die schönsten Porträts.",
+    "skipper": {
+      "best_use": "Hafen",
+      "harbour": "Marina Baotić / Stadtquai",
+      "wind_protection": "Hafenliegeplatz",
+      "notes": "Früh/Reservierung. Schwell durch Verkehr möglich."
+    }
   },
   {
-    "id": "lucice",
-    "name": "Uvala Lučice (Brač)",
-    "lat": 43.310067,
-    "lng": 16.446517,
-    "type": "anchorage",
-    "typeLabel": "Ankerbucht/Bojen",
-    "bestLight": "Nachmittag/Sunset",
-    "short": "Mehrarmige, smaragdgrüne Bucht",
-    "instagram": "Kiefern, Kalkwände, fingerförmige Arme – Abendsonne auf dem Wasser.",
-    "skipper": "Bewirtschaftete Bojen; sehr guter Schutz außer starker Bora (NE). Landleinen üblich."
+    "id": "sesula-solta",
+    "name": "Šešula-Bucht (Šolta)",
+    "type": "bay",
+    "island": "Šolta",
+    "coords": [43.392107, 16.207737],
+    "instagram": "Tiefe, fjordartige Bucht – Bojen + Dinghy-Pickup ins Restaurant. Sundowner = Sternenfoto-Gold.",
+    "skipper": {
+      "best_use": "Übernachten an Boje/Ankern",
+      "anchor_depth_m": "6–12",
+      "holding": "Sand/Seegras – gut",
+      "wind_protection": "Sehr gut, außer bei starkem SW-Schwell",
+      "notes": "Bojen teils restaurantgebunden (Šišmiš/Šešula). Früh da sein oder reservieren."
+    }
   },
   {
-    "id": "sesula",
-    "name": "Uvala Šešula (Šolta)",
-    "lat": 43.392470,
-    "lng": 16.210070,
-    "type": "anchorage",
-    "typeLabel": "Naturhafen · Bojen",
-    "bestLight": "Sunset",
-    "short": "Tiefer Einschnitt, spiegelglatt",
-    "instagram": "Blaue Stunde mit Restaurant-Shuttle – sehr stimmungsvoll.",
-    "skipper": "Sehr guter Schutz; Bojen vom Restaurant. Anfahrt langsam; Schwojkreise beachten."
+    "id": "palmiizana-aci",
+    "name": "ACI Marina Palmižana (Pakleni)",
+    "type": "harbour",
+    "island": "Pakleni",
+    "coords": [43.158889, 16.393056],
+    "instagram": "Yacht-Vibes, Kiefern und Beachbars – perfekter Hub für Hvar-City bei Nacht.",
+    "skipper": {
+      "best_use": "Hafen/Übernachtung",
+      "wind_protection": "Besser als die Buchten bei W/SW-Schwell",
+      "notes": "Taxi-Boote nach Hvar-Stadt, früh reservieren (Hotspot)."
+    }
+  },
+  {
+    "id": "vinogradisce-bay",
+    "name": "Vinogradišće (Palmižana / Pakleni)",
+    "type": "bay",
+    "island": "Pakleni",
+    "coords": [43.160600, 16.371600],
+    "instagram": "Smaragd-Bucht mit Pinien & Glam – Stege, Lounges, weiches Nachmittagslicht für Mode-Shots.",
+    "skipper": {
+      "best_use": "Bojenfeld/Mittagsstopp",
+      "anchor_depth_m": "6–12",
+      "wind_protection": "Ok, aber bei W/SW lieber ACI",
+      "notes": "Bojen oft voll – Ankunft vor 14:00."
+    }
+  },
+  {
+    "id": "fortica-hvar",
+    "name": "Festung Fortica (Hvar-Stadt) – Viewpoint",
+    "type": "landmark",
+    "island": "Hvar",
+    "coords": [43.174950, 16.442117],
+    "instagram": "Das ikonische Hvar-Panorama über Altstadt & Pakleni – Sonnenuntergang = Kino.",
+    "skipper": {
+      "best_use": "Land/Städtetrip",
+      "notes": "Wassertaxi von Palmižana/Taxi-Boat zur Hvar-Riva, dann Aufstieg."
+    }
+  },
+  {
+    "id": "lucisca-hvar",
+    "name": "Lučišća (SW-Hvar, bei Sv. Nedjelja)",
+    "type": "bay",
+    "island": "Hvar",
+    "coords": [43.141790, 16.565400],
+    "instagram": "Kleine, dramatische Kiesbucht unter Steilwänden – intensives Türkis, sehr fotogen aus dem Wasser.",
+    "skipper": {
+      "best_use": "Kurzer Badestopp/Ankern",
+      "anchor_depth_m": "6–10",
+      "holding": "Kies/Sand – ok",
+      "wind_protection": "Gut bei N/NE; offen bei S/SW",
+      "notes": "Eng & beliebt – früh kommen."
+    }
+  },
+  {
+    "id": "dubovica-hvar",
+    "name": "Dubovica (S-Hvar)",
+    "type": "bay",
+    "island": "Hvar",
+    "coords": [43.146100, 16.534300],
+    "instagram": "Postkarten-Bucht mit historischem Sommerhaus – klares Wasser, Top-Beach-Shots.",
+    "skipper": {
+      "best_use": "Mittagsstopp",
+      "anchor_depth_m": "6–12",
+      "wind_protection": "Leicht offen bei S",
+      "notes": "Landzugang steil – per Beiboot bequem."
+    }
+  },
+  {
+    "id": "stari-grad-port",
+    "name": "Stari Grad – Hafen & Altstadt",
+    "type": "harbour",
+    "island": "Hvar",
+    "coords": [43.184700, 16.583000],
+    "instagram": "Steingassen, Wein, UNESCO-Ebene ‚Ager‘ – goldenes Abendlicht, Fahrräder, laue Hafenstimmung.",
+    "skipper": {
+      "best_use": "Hafen/Übernachtung",
+      "wind_protection": "Gut",
+      "notes": "Muring/Power – online reservieren (Sommer voll)."
+    }
+  },
+  {
+    "id": "lucice-brac",
+    "name": "Lučice (SW-Brač)",
+    "type": "bay",
+    "island": "Brač",
+    "coords": [43.324000, 16.490000],
+    "instagram": "Mehrarmige Traumbucht – tiefgrün, still; Sundowner-Reflexe zwischen Pinien.",
+    "skipper": {
+      "best_use": "Bojen/Übernachtung",
+      "anchor_depth_m": "8–15",
+      "wind_protection": "Sehr gut bei W/S/SW; bei Bora inneren Arm wählen",
+      "notes": "Bojen vom Restaurant ‚Lučice/Senko‘, Ankunft ~14:00 oder reservieren."
+    }
+  },
+  {
+    "id": "osibova-brac",
+    "name": "Osibova (Brač, bei Milna)",
+    "type": "bay",
+    "island": "Brač",
+    "coords": [43.312550, 16.435450],
+    "instagram": "Lange Einbuchtung mit Kiefern – glasklar, chillig; gute SUP-Shots entlang der Felsen.",
+    "skipper": {
+      "best_use": "Mittagsstopp/Bojen",
+      "anchor_depth_m": "5–12",
+      "wind_protection": "Geschützt außer bei S-Schwell",
+      "notes": "Teils Bojenpflicht (Konzession) – Tafeln beachten."
+    }
+  },
+  {
+    "id": "zlatni-rat",
+    "name": "Zlatni Rat (Bol, Brač) – Landmark",
+    "type": "landmark",
+    "island": "Brač",
+    "coords": [43.255800, 16.633800],
+    "instagram": "Der ‚Goldene Horn‘ – Sand-/Kies-Nehrung mit wechselnder Spitze; Drohnen-Topshot.",
+    "skipper": {
+      "best_use": "Tagesbesuch vom Land/Beiboot",
+      "notes": "Offen bei Maestral – zum Baden top, zum Übernachten ungeeignet."
+    }
+  },
+  {
+    "id": "vidova-gora-view",
+    "name": "Vidova Gora – Aussichtspunkt über Bol",
+    "type": "landmark",
+    "island": "Brač",
+    "coords": [43.292000, 16.655000],
+    "instagram": "Höchster Adria-Inselgipfel – epischer Blick auf Zlatni Rat & Hvar. Panorama-Shots!",
+    "skipper": {
+      "best_use": "Landtour",
+      "notes": "Per Taxi/Leihwagen vom Hafen Bol; klare Tage wählen."
+    }
+  },
+  {
+    "id": "necujam-solta",
+    "name": "Nečujam (Šolta) – Großbucht",
+    "type": "bay",
+    "island": "Šolta",
+    "coords": [43.403000, 16.353000],
+    "instagram": "Weite, ruhige Bucht – viel Platz für Schwarm-Ankerfotos & Sonnenfrühstück.",
+    "skipper": {
+      "best_use": "Lunch/evtl. Übernachtung",
+      "anchor_depth_m": "5–10",
+      "wind_protection": "Gut außer bei starker Bora",
+      "notes": "Mehrere Nebenarme – je nach Windzweig wählen."
+    }
+  },
+  {
+    "id": "stiniva-vis",
+    "name": "Stiniva (Vis) – ikonische Schluchtbucht",
+    "type": "bay",
+    "island": "Vis",
+    "coords": [43.030278, 16.170833],
+    "instagram": "Schmale Felsgasse öffnet sich zum türkisfarbenen Kies – einer der berühmtesten Shots der Adria.",
+    "skipper": {
+      "best_use": "Kurzer Badestopp",
+      "anchor_depth_m": "8–12 (außerhalb)",
+      "wind_protection": "Gut bei N; eng & stark besucht",
+      "notes": "Möglichst früh – Ankern draußen + Beiboot."
+    }
+  },
+  {
+    "id": "green-cave-ravnik",
+    "name": "Zelena špilja (Grüne Grotte, Ravnik)",
+    "type": "landmark",
+    "island": "Ravnik (bei Vis)",
+    "coords": [43.016800, 16.207700],
+    "instagram": "Sonnenstrahl fällt wie ein Spot ins Wasser – Unterwasser-Silhouetten als Kunst.",
+    "skipper": {
+      "best_use": "Kurzstopp/Beiboot",
+      "notes": "Ein-/Ausfahrt absichern; nicht hineinfahren bei Schwell."
+    }
+  },
+  {
+    "id": "blue-cave-bisevo",
+    "name": "Modra špilja – Blue Cave (Biševo)",
+    "type": "landmark",
+    "island": "Biševo",
+    "coords": [42.950000, 16.000000],
+    "instagram": "Zwischen 11–12 Uhr verzaubert die Höhle in elektrisches Blau – einmalige Lichtstimmung.",
+    "skipper": {
+      "best_use": "Ausflug ab Komiža/Vis",
+      "notes": "Eintritt/Behördenboote; nur bei ruhiger See, Wartezeiten im Hochsommer."
+    }
+  },
+  {
+    "id": "pokonji-dol-hvar",
+    "name": "Pokonji Dol (Hvar-Stadt, Strand & Leuchtturm-Insel)",
+    "type": "landmark",
+    "island": "Hvar",
+    "coords": [43.156550, 16.452570],
+    "instagram": "Langer Kiesstrand + Blick auf den Leuchtturm – goldenes Licht am späten Nachmittag.",
+    "skipper": {
+      "best_use": "Strandtag/Beiboot",
+      "notes": "Strandbars vorhanden; nicht als Übernachtungsankerplatz."
+    }
   }
 ]
