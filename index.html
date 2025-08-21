@@ -14,6 +14,13 @@
   <!-- Google Maps custom styles -->
   <link rel="stylesheet" href="css/gmaps.css" />
   <style>
+    /* Top spots controls */
+    .map-controls{position:fixed;right:12px;top:88px;background:#ffffffd9;border:1px solid #e5e7eb;border-radius:.5rem;padding:.5rem .6rem;backdrop-filter:saturate(180%) blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:.85rem;z-index:1000}
+    .map-controls h4{margin:.2rem 0 .4rem;font-size:.9rem}
+    .map-controls .row{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem}
+    .chip{display:inline-block;padding:.15rem .45rem;border-radius:.5rem;border:1px solid #e5e7eb;cursor:pointer;user-select:none}
+    .chip.active{background:#eef2ff;border-color:#c7d2fe}
+    .map-controls a{color:#0ea5e9;text-decoration:none}
     body {
       font-family: 'Montserrat', sans-serif;
       margin: 0;
@@ -24,7 +31,7 @@
     header {
       background-color: #0077b6;
       color: white;
-      text-align: center;
+      text-align: center;‚
       padding: 2rem 1rem;
     }
     header h1 {
@@ -193,6 +200,7 @@
     <p class="intro-message">Erlebe sieben Tage zwischen türkisfarbenem Meer, pittoresken Inseln und mediterranem Dolce&nbsp;Vita – diese Mini‑Broschüre zeigt euch die perfekte Mischung aus Segeln, Genuss und Kultur.</p>
   </header>
   <nav id="itinerary-nav">
+    <a href="#top-spots" id="nav-top-spots">Top spots</a>
     <a href="#day1">Tag 1</a>
     <a href="#day2">Tag 2</a>
     <a href="#day3">Tag 3</a>
@@ -513,3 +521,163 @@
   </script>
 </body>
 </html>
+
+  <script>
+    // --- Top spots on Google Maps ---
+    (function(){
+      const KINDS = ['Bucht','Hafen','Aussicht'];
+      const POPS  = ['Sehr beliebt','Hotspot','Local-Liebling','Geheimtipp+'];
+
+      function buildControls(map, ctx){
+        let box = document.querySelector('.map-controls');
+        if(!box){
+          box = document.createElement('div');
+          box.className = 'map-controls';
+          box.innerHTML = `
+            <h4>Top spots · Filter</h4>
+            <div class="row" id="chips-kind"></div>
+            <div class="row" id="chips-pop"></div>
+            <div class="row" style="justify-content:space-between;margin-top:.35rem">
+              <a id="windy-link" href="#" target="_blank">Windy öffnen</a>
+              <a id="reset-filters" href="#">Reset</a>
+            </div>
+          `;
+          document.body.appendChild(box);
+        }
+        const filters = { kind: new Set(), pop: new Set() };
+        const mkChip = (label, set)=>{
+          const el = document.createElement('span');
+          el.className = 'chip';
+          el.textContent = label;
+          el.addEventListener('click', ()=>{
+            if(set.has(label)) { set.delete(label); el.classList.remove('active'); }
+            else { set.add(label); el.classList.add('active'); }
+            applyFilter(ctx, filters);
+          });
+          return el;
+        };
+        const kindRow = box.querySelector('#chips-kind');
+        const popRow  = box.querySelector('#chips-pop');
+        kindRow.textContent = ''; popRow.textContent = '';
+        KINDS.forEach(k=> kindRow.appendChild(mkChip(k, filters.kind)) );
+        POPS.forEach(p=>  popRow.appendChild(mkChip(p, filters.pop))  );
+
+        const windy = box.querySelector('#windy-link');
+        const updateWindy = ()=>{
+          const c = map.getCenter();
+          const lat = c.lat().toFixed(3), lon = c.lng().toFixed(3);
+          windy.href = `https://www.windy.com/${lat}/${lon}?2025082400,${lat},${lon},9`;
+        };
+        updateWindy();
+        map.addListener('idle', updateWindy);
+
+        box.querySelector('#reset-filters').addEventListener('click', (e)=>{
+          e.preventDefault();
+          filters.kind.clear(); filters.pop.clear();
+          box.querySelectorAll('.chip.active').forEach(ch=> ch.classList.remove('active'));
+          applyFilter(ctx, filters);
+        });
+
+        return filters;
+      }
+
+      function applyFilter(ctx, filters){
+        ctx.markers.forEach(({marker, data})=>{
+          const kindBase = (data.kind||'').split('·')[0].trim();
+          const passKind = !filters.kind.size || filters.kind.has(kindBase);
+          const passPop  = !filters.pop.size  || filters.pop.has((data.popularity||'').trim());
+          marker.setVisible(!!(passKind && passPop));
+        });
+      }
+
+      function popupHTML(p){
+        const fmt = n=> typeof n === 'number' ? n.toFixed(6) : n;
+        const lat = Number(p.coords[0]);
+        const lon = Number(p.coords[1]);
+        return `
+          <div style="max-width:320px">
+            <h3 style="margin:.25rem 0 .5rem; font-size:1.05rem;">${p.name}</h3>
+            <div style="margin:.35rem 0 .2rem; font-weight:600; text-transform:uppercase; font-size:.78rem; color:#6b7280;">Instagram</div>
+            <div>${p.instagram || ''}</div>
+            <div style="margin:.6rem 0 .2rem; font-weight:600; text-transform:uppercase; font-size:.78rem; color:#6b7280;">Skipper Tipps</div>
+            <div>${p.tips || ''}</div>
+            <div style="margin-top:.5rem">
+              <span style="display:inline-block;background:#eef2ff;color:#3730a3;padding:.1rem .4rem;border-radius:.375rem;font-size:.72rem;margin-right:.25rem;">${p.kind || ''}</span>
+              <span style="display:inline-block;background:#ecfeff;color:#155e75;padding:.1rem .4rem;border-radius:.375rem;font-size:.72rem;margin-right:.25rem;">${p.popularity || ''}</span>
+            </div>
+            <div style="margin-top:.5rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;">Koordinaten: ${fmt(lat)}, ${fmt(lon)}</div>
+          </div>`;
+      }
+
+      // Wrap initMap to hook after route map is built
+      const _origInit = window.initMap;
+      window.initMap = async function(){
+        if(typeof _origInit === 'function') _origInit();
+        try{
+          const mapEl = document.getElementById('gmaps-map');
+          if(!mapEl || !window._routeMap){
+            // gmaps-route.js should set window._routeMap to the Google Map instance.
+            // If it hasn't, try to detect the map instance from the first map on page.
+          }
+          // Heuristics: find the first google map instance via maps event properties
+          let map = window._routeMap;
+          if(!map && window.google && google.maps && google.maps.event){
+            // Attempt to read from the global markers by creating a dummy map bound to the element
+            // Best effort: if _routeMap wasn't exported, use the Maps API to get it via internal reference
+            // As a fallback, re-initialize a read-only map on the same element – sharing center/zoom is fine
+            map = new google.maps.Map(mapEl, { center: {lat:43.45, lng:16.35}, zoom: 9 });
+          }
+          if(!map) return;
+
+          // Load spots
+          let spots = null;
+          try {
+            const res = await fetch('content/map/topspots.json');
+            if(res.ok) spots = await res.json();
+          } catch(_) {}
+          if(!spots || !Array.isArray(spots) || !spots.length){
+            spots = [
+              { name: 'Blue Lagoon (Krknjaši), Drvenik Veli', coords:[43.441675,16.176139], kind:'Bucht', popularity:'Sehr beliebt', instagram:'Türkis über hellem Sand, Drohnen-Shot zwischen Krknjaš Veli & Mali.', tips:'Mittagsstopp/Boje; auf Sand flecken; früh kommen.' }
+            ];
+          }
+
+          const info = new google.maps.InfoWindow();
+          const markers = [];
+          const bounds = new google.maps.LatLngBounds();
+          spots.forEach(p=>{
+            const lat = Number(p.coords[0]);
+            const lon = Number(p.coords[1]);
+            const pos = { lat, lng: lon };
+            const marker = new google.maps.Marker({ position: pos, map, title: p.name });
+            marker.addListener('click', ()=>{
+              info.setContent(popupHTML(p));
+              info.open({ map, anchor: marker });
+            });
+            markers.push({ marker, data: p });
+            bounds.extend(pos);
+          });
+
+          const ctx = { markers, spots };
+          const filters = buildControls(map, ctx);
+
+          // Wire nav link
+          const navTop = document.getElementById('nav-top-spots');
+          if(navTop){
+            navTop.addEventListener('click', (e)=>{
+              e.preventDefault();
+              // Ensure all visible, fit bounds
+              filters.kind.clear(); filters.pop.clear();
+              document.querySelectorAll('.map-controls .chip.active').forEach(ch=> ch.classList.remove('active'));
+              applyFilter(ctx, filters);
+              map.fitBounds(bounds);
+            });
+          }
+
+          // Expose for debugging
+          window._topSpotsGM = ctx;
+        } catch (err) {
+          console.error('Top spots init failed', err);
+        }
+      };
+    })();
+  </script>
