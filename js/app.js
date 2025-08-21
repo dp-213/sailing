@@ -1,3 +1,95 @@
+// Fallback-Daten für Top-Spots, falls content/map/topspots.json (noch) nicht existiert
+const DEFAULT_TOPSPOTS = [
+  {
+    name: "Blue Lagoon (Krknjaši), Drvenik Veli",
+    coords: [43.441675, 16.176139],
+    kind: "Mittagsstopp · Boje/Anker",
+    popularity: "Sehr beliebt",
+    instagram: "Karibik-Türkis über hellem Sand – Drohnenfoto zwischen Krknjaš Veli & Mali. Flachwasser, zerrissene Blautöne, weißer Saum.",
+    tips: "Tagsüber an Sandflecken ankern/Boje; offen gegen N/O-Winde, am besten bei Maestral (NW) moderat. Hochsaison: früh da sein."
+  },
+  {
+    name: "Vinogradišće Bay (Palmižana, Sv. Klement)",
+    coords: [43.158000, 16.390280],
+    kind: "Bucht · Bojenfeld",
+    popularity: "Hotspot",
+    instagram: "Pinienrahmen, smaragdgrüne Zunge, Beach-Clubs (Laganini & Co.) – goldenes Abendlicht auf Wassertaxis Richtung Hvar.",
+    tips: "Guter Schutz bei N/NW, exponiert bei Jugo (S). Bojen statt Ankern. 10–15 Min Taxiboot nach Hvar."
+  },
+  {
+    name: "Festung Fortica (Španjola) – Hvar Viewpoint",
+    coords: [43.174870, 16.441860],
+    kind: "Aussicht · Land",
+    popularity: "Klassiker",
+    instagram: "Ikonisches Hvar-Panorama über Altstadt & Pakleni-Inseln. Beste Shots Golden/Blue Hour – Stadtlichter + Ankerfeld.",
+    tips: "Mit Taxiboot nach Hvar und Aufstieg zu Fuß. Kein Ankerplatz; Bildstopp an der Riva, Crew-Foto oben."
+  },
+  {
+    name: "Uvala Lučice (Brač) – Restaurant & Bojen",
+    coords: [43.310067, 16.446517],
+    kind: "Bucht · Bojen/Restaurant",
+    popularity: "Sehr beliebt",
+    instagram: "Drei fingerförmige Becken, Kiefern & Kalkwände – vom SUP durchs kristallklare Becken zur Abendrunde.",
+    tips: "Bojenfeld (Restaurant Lučice). Gut geschützt, bei starkem S etwas Schwell. Früh ankommen; Landleine möglich."
+  },
+  {
+    name: "Uvala Šešula (Šolta) – Naturhafen bei Maslinica",
+    coords: [43.392470, 16.210070],
+    kind: "Bucht · Boje/Anker",
+    popularity: "Beliebt",
+    instagram: "Langgezogene Zackenbucht mit Glaswasser. Sunset-Silhouetten der sieben Inselchen vor Maslinica.",
+    tips: "Sehr guter Wetterschutz; gerne Landleinen. Restaurants an Land per Dinghy erreichbar."
+  },
+  {
+    name: "Maslinica (Šolta) – Marina & Schloss",
+    coords: [43.398392, 16.207783],
+    kind: "Hafen",
+    popularity: "Beliebt",
+    instagram: "Abendshot: Yachten unterm beleuchteten Schloss Martinis Marchi. Kopfsteinpflaster, Pastellhimmel.",
+    tips: "Marina-Übernachtung komfortabel. Früh einlaufen; Alternativ Šešula (1 sm S), falls voll."
+  },
+  {
+    name: "Uvala Smrka (Brač) – U-Boot-Tunnel",
+    coords: [43.290200, 16.494300],
+    kind: "Ankerbucht · Lost Place",
+    popularity: "Geheimtipp+",
+    instagram: "Dramatische Felskulisse + Ex-Militärtunnel. Kontrastreiche Fotos: dunkler Tunnel vs. türkisfarbene Außenbucht.",
+    tips: "Guter Schutz außer bei S/Jugo; im NE-Teil auf Unterwasserfelsen achten. Auf Sand ankern; Landleinen empfohlen."
+  },
+  {
+    name: "Zlatni Rat (Bol, Brač) – ‚Goldenes Horn‘",
+    coords: [43.255831, 16.633800],
+    kind: "Strand · Fotostopp",
+    popularity: "Sehr beliebt",
+    instagram: "Luftaufnahmen/Tele: die wandernde Kieszunge in Pfeilform. Klarstes Türkis mit Brandungsspitze.",
+    tips: "Zum Baden top, aber offener Schwell möglich. Für ruhigen Fotoanker weiträumig frei halten; Drohne nur wo erlaubt."
+  },
+  {
+    name: "Stiniva (Vis) – Schluchtbucht",
+    coords: [43.021343, 16.171737],
+    kind: "Tagesanker · Natur",
+    popularity: "Sehr beliebt",
+    instagram: "Der Klassiker: enger Felsdurchlass, innen Amphitheater-Strand. Spektakulär aus dem Dinghy.",
+    tips: "Nur bei ruhigem Wetter! Draußen ankern und mit Dinghy durch die Öffnung. Kein Übernachtungsplatz; viel Verkehr mittags."
+  },
+  {
+    name: "Zelena špilja (Grüne Grotte), Ravnik",
+    coords: [43.015329, 16.224360],
+    kind: "Spot · Einfahrt per Boot",
+    popularity: "Beliebt",
+    instagram: "Sonnenstrahl durchs Dachloch – grün glühendes Wasser. Gegen Mittag hellstes Licht.",
+    tips: "Ein-/Ausfahrt organisiert; Regeln/Eintritt beachten. Nicht bei Seegang. Kurzanker draußen oder treiben lassen."
+  },
+  {
+    name: "Uvala Tatinja (Šolta) – helle Sandflecken",
+    coords: [43.369450, 16.283217],
+    kind: "Ankerbucht · Mittagsstopp",
+    popularity: "Local-Liebling",
+    instagram: "Hufeisenbucht, Sandflecken im Türkis – perfekte Mittagsfarben. Felsige Kanten geben Kontrast.",
+    tips: "Sand/Seegras – sauber auf Sand fallen lassen. Am ruhigsten bei W-Sektor; bei N/NE offen."
+  }
+];
+
 async function fetchYAML(url){
   try{
     const res=await fetch(url);
@@ -34,6 +126,45 @@ function renderCountdown(startIso){
     const days=Math.floor(diff/86400000);
     document.getElementById('countdown').textContent=`Start in ${days} Tagen`;
   }
+}
+
+function createTopSpotPopup(p){
+  const lat = Number(p.coords[0]);
+  const lon = Number(p.coords[1]);
+  const fmt = (n)=> (typeof n === 'number' ? n.toFixed(6) : n);
+  return `
+    <div style="max-width:320px">
+      <h3 style="margin:.25rem 0 .5rem; font-size:1.05rem;">${p.name}</h3>
+      <div style="margin:.35rem 0 .2rem; font-weight:600; text-transform:uppercase; font-size:.78rem; color:#6b7280;">Instagram</div>
+      <div>${p.instagram || ''}</div>
+      <div style="margin:.6rem 0 .2rem; font-weight:600; text-transform:uppercase; font-size:.78rem; color:#6b7280;">Skipper Tipps</div>
+      <div>${p.tips || ''}</div>
+      <div style="margin-top:.5rem">
+        <span style="display:inline-block;background:#eef2ff;color:#3730a3;padding:.1rem .4rem;border-radius:.375rem;font-size:.72rem;margin-right:.25rem;">${p.kind || ''}</span>
+        <span style="display:inline-block;background:#ecfeff;color:#155e75;padding:.1rem .4rem;border-radius:.375rem;font-size:.72rem;margin-right:.25rem;">${p.popularity || ''}</span>
+      </div>
+      <div style="margin-top:.5rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;">Koordinaten: ${fmt(lat)}, ${fmt(lon)}</div>
+    </div>`;
+}
+
+async function setupTopSpotsLayer(map){
+  // Daten laden (extern oder Fallback)
+  let spots = null;
+  try{
+    const res = await fetch('content/map/topspots.json');
+    if(res.ok){ spots = await res.json(); }
+  }catch(e){ /* ignore */ }
+  if(!spots || !Array.isArray(spots) || !spots.length){
+    spots = DEFAULT_TOPSPOTS;
+  }
+  const layer = L.layerGroup();
+  spots.forEach(p=>{
+    const m = L.marker([p.coords[0], p.coords[1]]);
+    m.bindPopup(createTopSpotPopup(p), { maxWidth: 320 });
+    layer.addLayer(m);
+  });
+  // global referenzieren, um togglen zu können
+  window._topSpots = { layer, spots };
 }
 
 async function init(){
@@ -102,11 +233,39 @@ async function init(){
         link.classList.add('disabled');
       }
     }
+    // Toggle-Link für Top spots in die Nav einfügen (vor den Tag-Links)
+    if(nav){
+      const topLink = document.createElement('a');
+      topLink.href = '#top-spots';
+      topLink.textContent = 'Top spots';
+      topLink.style.fontWeight = '600';
+      topLink.style.marginRight = '0.8em';
+      topLink.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if(!window._topSpots) return;
+        const { layer, spots } = window._topSpots;
+        const onMap = map.hasLayer(layer);
+        if(onMap){
+          map.removeLayer(layer);
+          topLink.classList.remove('active');
+        } else {
+          layer.addTo(map);
+          topLink.classList.add('active');
+          try{
+            const bounds = L.latLngBounds(spots.map(s=>[s.coords[0], s.coords[1]]));
+            map.fitBounds(bounds.pad(0.15));
+          }catch(_){ /* ignore */ }
+        }
+      });
+      // Link ganz vorne platzieren
+      nav.prepend(topLink);
+    }
   }
 
   // map
   const map = L.map('map').setView([43.45,16.35], 8);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+  await setupTopSpotsLayer(map);
   const route=await fetch('content/map/route.geojson').then(r=>r.json()).catch(()=>null);
   const places=await fetch('content/map/places.json').then(r=>r.json()).catch(()=>null);
   if(route){
@@ -133,6 +292,10 @@ async function init(){
       if(p.name) m.bindPopup(`<strong>${p.name}</strong>`);
     });
   }
+
+  // Optional: Standardmäßig Top-Spots nicht anzeigen; Nutzer klickt im Menü.
+  // Wenn gewünscht, kann man hier layer standardmäßig aktivieren:
+  // if(window._topSpots && window._topSpots.layer){ window._topSpots.layer.addTo(map); }
 
   renderGallery();
 }
