@@ -1,9 +1,11 @@
 const CACHE_NAME = 'sailing-v1';
 const BASE_PATH = '/sailing';
 
-// Assets zum Cachen
+// Assets die beim Install gecached werden
 const ASSETS = [
   // HTML
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
   `${BASE_PATH}/topspots.html`,
   `${BASE_PATH}/spot.html`,
   
@@ -14,39 +16,86 @@ const ASSETS = [
   `${BASE_PATH}/js/topspots.js`,
   `${BASE_PATH}/js/spot.js`,
   
-  // Daten
-  `${BASE_PATH}/content/map/topspots.json`,
-  
   // Icons
   `${BASE_PATH}/assets/icons/anchorage.svg`,
   `${BASE_PATH}/assets/icons/harbor.svg`,
   `${BASE_PATH}/assets/icons/landmark.svg`,
-  `${BASE_PATH}/assets/icons/app-icon-192.png`,
-  `${BASE_PATH}/assets/icons/app-icon-512.png`,
   
-  // CDN-Ressourcen
+  // CDN
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 ];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+// Installation: Cache alle wichtigen Assets
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing...');
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[SW] Caching app shell...');
+        return cache.addAll(ASSETS);
+      })
+  );
 });
-self.addEventListener("activate", (e) => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k!==CACHE).map(k => caches.delete(k)))));
-});
-self.addEventListener("fetch", (e) => {
-  const url = new URL(e.request.url);
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      const fetchPromise = fetch(e.request).then(resp => {
-        const copy = resp.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-        return resp;
-      }).catch(() => cached);
-      return cached || fetchPromise;
+
+// Aktivierung: Lösche alte Caches
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating...');
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          })
+      );
     })
+  );
+});
+
+// Fetch: Network-first für JSON, Cache-first für Assets
+self.addEventListener('fetch', (event) => {
+  // JSON immer vom Network laden
+  if (event.request.url.endsWith('topspots.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response;
+        })
+        .catch(err => {
+          console.error('[SW] JSON fetch failed:', err);
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Für alle anderen Requests: Cache-first
+  event.respondWith(
+    caches.match(event.request)
+      .then(cached => {
+        if (cached) {
+          return cached;
+        }
+        return fetch(event.request)
+          .then(response => {
+            if (!response || response.status !== 200) {
+              return response;
+            }
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+            return response;
+          });
+      })
+  );
+});
   );
 });
