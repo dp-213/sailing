@@ -1,9 +1,23 @@
+const BASE_PATH = '/sailing';
+const DATA_URL = `${BASE_PATH}/content/map/topspots.json?v=2025-08-21`;
+
 // DOM Elements
 const spotList = document.getElementById('spot-list');
 const searchInput = document.getElementById('q');
 const typeFilters = document.querySelectorAll('.chips input[type="checkbox"]');
 const windyLink = document.getElementById('windy-link');
 const toastEl = document.getElementById('toast');
+
+// Leaflet Default Icon Fix für Safari
+const DefaultIcon = L.icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 // Custom Icons für die Kartenmarker
 const createIcon = (type) => {
@@ -90,88 +104,97 @@ const updateWindyLink = (map) => {
 };
 
 // Hauptfunktion
+// State
+let spots = [];
+let activeSpot = null;
+let map = null;
+
+// Load and initialize
 async function init() {
+  spots = await fetchSpots();
+  initMap();
+  bindSearch();
+  bindFilters();
+  renderSpots();
+}
+
+async function fetchSpots() {
   try {
-    const dataUrl = new URL('content/map/topspots.json', document.baseURI).toString();
-    console.log('[TopSpots] fetching', dataUrl);
-    const res = await fetch(dataUrl, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
-    const spots = await res.json();
-
-    // Initialisiere Karte
-    const map = L.map('map').setView([43.32, 16.45], 10);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Erstelle Icons
-    const icons = {
-      anchorage: createIcon('anchorage'),
-      harbor: createIcon('harbor'),
-      landmark: createIcon('landmark')
-    };
-
-    // Füge Marker hinzu
-    const markers = spots.map(spot => {
-      const marker = L.marker([spot.lat, spot.lng], { 
-        icon: icons[spot.type],
-        title: spot.name
-      });
-      marker.bindPopup(() => createPopup(spot));
-      return marker;
-    });
-    const markerGroup = L.featureGroup(markers).addTo(map);
-
-    // Aktualisiere Windy-Link bei Kartenbewegung
-    map.on('moveend', () => updateWindyLink(map));
-    updateWindyLink(map);
-
-    // Event Handler für Suche und Filter
-    const updateView = () => {
-      const search = searchInput.value;
-      const activeTypes = Array.from(typeFilters)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value);
-
-      const filtered = filterSpots(spots, search, activeTypes);
-
-      // Update Liste
-      spotList.innerHTML = '';
-      filtered.forEach(spot => {
-        const li = createListItem(spot);
-        li.addEventListener('click', () => {
-          map.flyTo([spot.lat, spot.lng], 14);
-          markers.find(m => m.getLatLng().lat === spot.lat)?.openPopup();
-        });
-        spotList.appendChild(li);
-      });
-
-      // Update Marker
-      markers.forEach(marker => {
-        const spot = spots.find(s => 
-          s.lat === marker.getLatLng().lat && 
-          s.lng === marker.getLatLng().lng
-        );
-        if (filtered.includes(spot)) {
-          marker.addTo(map);
-        } else {
-          marker.remove();
-        }
-      });
-    };
-
-    // Event Listener
-    searchInput.addEventListener('input', updateView);
-    typeFilters.forEach(cb => cb.addEventListener('change', updateView));
-
-    // Initial View
-    updateView();
-
-  } catch (err) {
-    console.error('[TopSpots] load error', err);
-    showToast('Konnte Spots nicht laden – existiert content/map/topspots.json und ist der Name exakt?');
+    const response = await fetch(DATA_URL);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Fehler beim Laden der Spots:', error);
+    showToast('Fehler beim Laden der Spots. Bitte später erneut versuchen.');
+    return [];
   }
+}
+
+// Initialisiere Karte
+function initMap() {
+  map = L.map('map').setView([54.5, 11], 8);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  map.on('moveend', () => updateWindyLink(map));
+}
+
+// Suchfunktionalität
+function bindSearch() {
+  let debounceTimeout;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      renderSpots(e.target.value);
+    }, 300);
+  });
+}
+
+// Filter-Funktionalität
+function bindFilters() {
+  typeFilters.forEach(filter => {
+    filter.addEventListener('change', () => {
+      renderSpots(searchInput.value);
+    });
+  });
+}
+
+// Rendere gefilterte Spots
+function renderSpots(search = '') {
+  const activeTypes = Array.from(typeFilters)
+    .filter(f => f.checked)
+    .map(f => f.value);
+
+  const filteredSpots = filterSpots(spots, search, activeTypes);
+  
+  // Liste leeren und neu befüllen
+  spotList.innerHTML = '';
+  filteredSpots.forEach(spot => {
+    const li = createListItem(spot);
+    li.addEventListener('click', () => {
+      activeSpot?.marker.closePopup();
+      spot.marker.openPopup();
+      activeSpot = spot;
+    });
+    spotList.appendChild(li);
+  });
+
+  // Marker auf der Karte aktualisieren
+  spots.forEach(spot => {
+    if (!spot.marker) {
+      spot.marker = L.marker([spot.lat, spot.lng], {
+        icon: createIcon(spot.type)
+      })
+      .bindPopup(() => createPopup(spot))
+      .addTo(map);
+    }
+    spot.marker.setOpacity(filteredSpots.includes(spot) ? 1 : 0.3);
+  });
 }
 
 // Start

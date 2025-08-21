@@ -1,22 +1,27 @@
-// sw.js — robust für GitHub Pages unter /sailing/
-const CACHE = 'sailing-v3';
-const SCOPE = '/sailing/';
+const CACHE_NAME = 'sailing-v3';
+const BASE_PATH = '/sailing';
 
-// Nur eigene Assets pre-cachen (keine CDN-URLs!)
-const PRECACHE = [
-  `${SCOPE}`,
-  `${SCOPE}index.html`,
-  `${SCOPE}topspots.html`,
-  `${SCOPE}spot.html`,
-  `${SCOPE}css/topspots.css`,
-  `${SCOPE}js/topspots.js`,
-  `${SCOPE}js/spot.js`,
-  `${SCOPE}content/map/topspots.json`,
-  `${SCOPE}assets/icons/anchorage.svg`,
-  `${SCOPE}assets/icons/harbor.svg`,
-  `${SCOPE}assets/icons/landmark.svg`,
-  `${SCOPE}assets/icons/app-icon-192.png`,
-  `${SCOPE}assets/icons/app-icon-512.png`
+// Assets zum Cachen (ohne JSON-Daten)
+const ASSETS = [
+  // HTML
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/topspots.html`,
+  `${BASE_PATH}/spot.html`,
+  
+  // CSS
+  `${BASE_PATH}/css/topspots.css`,
+  
+  // JavaScript
+  `${BASE_PATH}/js/topspots.js`,
+  `${BASE_PATH}/js/spot.js`,
+  
+  // Icons
+  `${BASE_PATH}/assets/icons/anchorage.svg`,
+  `${BASE_PATH}/assets/icons/harbor.svg`,
+  `${BASE_PATH}/assets/icons/landmark.svg`,
+  `${BASE_PATH}/assets/icons/app-icon-192.png`,
+  `${BASE_PATH}/assets/icons/app-icon-512.png`
 ];
 
 self.addEventListener('install', (event) => {
