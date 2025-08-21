@@ -85,7 +85,9 @@
   // Daten laden
   function load(){
     const id = getIdFromUrl();
-    fetch('content/map/topspots.json')
+    const dataUrl = new URL('content/map/topspots.json', document.baseURI).toString();
+    console.log('[Spot] fetching', dataUrl);
+    fetch(dataUrl, { cache: 'no-store' })
       .then(r=>r.json())
       .then(data => {
         const spots = Array.isArray(data) ? data : (data.spots || []);

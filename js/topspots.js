@@ -92,10 +92,10 @@ const updateWindyLink = (map) => {
 // Hauptfunktion
 async function init() {
   try {
-    // Lade Daten
-    const dataUrl = new URL('content/map/topspots.json', location.href).toString();
+    const dataUrl = new URL('content/map/topspots.json', document.baseURI).toString();
+    console.log('[TopSpots] fetching', dataUrl);
     const res = await fetch(dataUrl, { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
     const spots = await res.json();
 
     // Initialisiere Karte
@@ -169,8 +169,8 @@ async function init() {
     updateView();
 
   } catch (err) {
-    console.error(err);
-    showToast('Konnte Spots nicht laden – ist content/map/topspots.json gepusht?');
+    console.error('[TopSpots] load error', err);
+    showToast('Konnte Spots nicht laden – existiert content/map/topspots.json und ist der Name exakt?');
   }
 }
 
