@@ -1,97 +1,93 @@
-const CACHE_NAME = 'sailing-v2'; // Version erhöht für Clean Slate
-const BASE_PATH = '/sailing';
+// sw.js — robust für GitHub Pages unter /sailing/
+const CACHE = 'sailing-v3';
+const SCOPE = '/sailing/';
 
-// Vollständige Liste ALLER Assets
-const ASSETS = [
-  // HTML
-  `${BASE_PATH}/`,
-  `${BASE_PATH}/index.html`,
-  `${BASE_PATH}/topspots.html`,
-  `${BASE_PATH}/spot.html`,
-  
-  // CSS
-  `${BASE_PATH}/css/topspots.css`,
-  
-  // JavaScript
-  `${BASE_PATH}/js/topspots.js`,
-  `${BASE_PATH}/js/spot.js`,
-  
-  // Data
-  `${BASE_PATH}/content/map/topspots.json`,
-  
-  // Icons
-  `${BASE_PATH}/assets/icons/anchorage.svg`,
-  `${BASE_PATH}/assets/icons/harbor.svg`,
-  `${BASE_PATH}/assets/icons/landmark.svg`,
-  `${BASE_PATH}/assets/icons/app-icon-192.png`,
-  `${BASE_PATH}/assets/icons/app-icon-512.png`,
-  
-  // CDN Resources
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+// Nur eigene Assets pre-cachen (keine CDN-URLs!)
+const PRECACHE = [
+  `${SCOPE}`,
+  `${SCOPE}index.html`,
+  `${SCOPE}topspots.html`,
+  `${SCOPE}spot.html`,
+  `${SCOPE}css/topspots.css`,
+  `${SCOPE}js/topspots.js`,
+  `${SCOPE}js/spot.js`,
+  `${SCOPE}content/map/topspots.json`,
+  `${SCOPE}assets/icons/anchorage.svg`,
+  `${SCOPE}assets/icons/harbor.svg`,
+  `${SCOPE}assets/icons/landmark.svg`,
+  `${SCOPE}assets/icons/app-icon-192.png`,
+  `${SCOPE}assets/icons/app-icon-512.png`
 ];
 
-// Cache beim Install
-self.addEventListener('install', event => {
-  console.log('[SW] Installing...');
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Pre-caching assets...');
-        return cache.addAll(ASSETS);
+    caches.open(CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+// Hilfsfunktionen
+const putRuntime = async (req, res) => {
+  try {
+    const c = await caches.open(CACHE);
+    await c.put(req, res);
+  } catch {}
+};
+
+// Fetch-Strategie:
+// - HTML/JSON: network-first (mit Cache-Fallback)
+// - Assets (css/js/svg/png/...): cache-first
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  // Nur Requests im eigenen Origin/Scope behandeln
+  const sameOrigin = url.origin === self.location.origin;
+  if (!sameOrigin || !url.pathname.startsWith(SCOPE)) return;
+
+  const isAsset = /\.(css|js|svg|png|jpg|jpeg|webp|ico)$/.test(url.pathname);
+  const isHTML  = req.mode === 'navigate' || url.pathname.endsWith('.html');
+  const isJSON  = url.pathname.endsWith('.json');
+
+  if (isAsset) {
+    // Cache-first für Assets
+    event.respondWith(
+      caches.match(req).then(cached => {
+        if (cached) return cached;
+        return fetch(req).then(res => {
+          // nur erfolgreiche Antworten cachen
+          if (res && res.status === 200) putRuntime(req, res.clone());
+          return res;
+        }).catch(() => cached || new Response('', { status: 503 }));
       })
-      .catch(err => console.error('[SW] Pre-cache failed:', err))
-  );
-});
+    );
+    return;
+  }
 
-// Alte Caches beim Activate löschen
-self.addEventListener('activate', event => {
-  console.log('[SW] Activating...');
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys
-        .filter(key => key !== CACHE_NAME)
-        .map(key => {
-          console.log('[SW] Removing old cache:', key);
-          return caches.delete(key);
-        })
-    ))
-  );
-});
+  if (isHTML || isJSON) {
+    // Network-first für Dokumente & Daten
+    event.respondWith(
+      fetch(req).then(res => {
+        if (res && res.status === 200) putRuntime(req, res.clone());
+        return res;
+      }).catch(() =>
+        caches.match(req).then(cached =>
+          cached || caches.match(`${SCOPE}index.html`) || new Response('', { status: 503 })
+        )
+      )
+    );
+    return;
+  }
 
-// Fetch-Handler mit Fallback
-self.addEventListener('fetch', event => {
+  // Fallback: versuche Cache, sonst Netz; liefere immer eine Response
   event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        // Versuche zuerst den Cache
-        if (cachedResponse) {
-          console.log('[SW] Serving from cache:', event.request.url);
-          return cachedResponse;
-        }
-
-        // Sonst vom Netzwerk laden
-        return fetch(event.request)
-          .then(response => {
-            // Cache nur erfolgreiche Responses
-            if (response && response.status === 200) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => {
-                  cache.put(event.request, responseToCache);
-                  console.log('[SW] Caching new resource:', event.request.url);
-                });
-            }
-            return response;
-          })
-          .catch(err => {
-            console.error('[SW] Fetch failed:', err);
-            // Wichtig: Leere 404-Response statt null zurückgeben
-            return new Response('', {status: 404});
-          });
-      })
+    caches.match(req).then(cached => cached || fetch(req).catch(() => new Response('', { status: 503 })))
   );
-});
 });
