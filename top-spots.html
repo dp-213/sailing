@@ -1,52 +1,411 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Top Spots – Dalmatien (Insta & Skipper)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <link rel="stylesheet" href="css/top-spots.css" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="index.html" aria-label="Zur Startseite">⛵︎ Sailing Dalmatia</a>
-      <nav class="main-nav" aria-label="Hauptmenü">
-        <a href="index.html">Route</a>
-        <a href="top-spots.html" class="active" aria-current="page">Top&nbsp;Spots</a>
-      </nav>
-    </div>
-  </header>
+(() => {
+  // --- Constants ------------------------------------------------------------
+  const BASE_PATH = '/sailing'; // GitHub Pages subfolder
+  const DATA_URL = new URL('content/map/topspots.json?v=2025-08-21-2', document.baseURI).toString();
 
-  <main class="layout">
-    <aside class="panel" aria-label="Filter & Liste">
-      <div class="filters">
-        <input id="q" type="search" placeholder="Suchen … (z.B. Hvar, Bucht)" aria-label="Suche nach Spots" />
-        <div class="chips">
-          <label><input type="checkbox" value="anchorage" checked> Ankerbucht</label>
-          <label><input type="checkbox" value="harbor" checked> Hafen</label>
-          <label><input type="checkbox" value="landmark" checked> Landmarke</label>
+  // --- Elements -------------------------------------------------------------
+  const mapEl = document.getElementById('map');
+  const listEl = document.getElementById('spot-list');
+  const searchEl = document.getElementById('q');
+  const checkEls = Array.from(document.querySelectorAll('.chips input[type=checkbox]'));
+
+  // Add a counter above the list (if not already there)
+  if (!document.getElementById('spot-counter')) {
+    const counter = document.createElement('div');
+    counter.id = 'spot-counter';
+    counter.style.cssText = 'padding:.5rem 1rem;color:#374151;font-weight:600';
+    counter.textContent = 'Spots: –';
+    listEl.parentElement.insertBefore(counter, listEl);
+  }
+  const counterEl = document.getElementById('spot-counter');
+
+  // --- Leaflet Map ----------------------------------------------------------
+  const map = L.map(mapEl, { zoomControl: true }).setView([43.32, 16.45], 9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Safari/Leaflet default marker icon fix
+  const DefaultIcon = L.icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
+
+  // Colored dot markers for quick type distinction
+  const iconDot = (cls) => L.divIcon({ className: '', html: `<span class="dot ${cls}"></span>`, iconSize: [12, 12] });
+  const icons = { anchorage: iconDot('dot-a'), harbor: iconDot('dot-h'), landmark: iconDot('dot-l') };
+
+  // --- State ----------------------------------------------------------------
+  let allSpots = [];
+  const markers = [];
+  const markerById = new Map();
+
+  // --- Helpers --------------------------------------------------------------
+  const validLatLng = (lat, lng) => Number.isFinite(lat) && Number.isFinite(lng) && lat > 42.4 && lat < 44.2 && lng > 15.6 && lng < 17.5;
+
+  function popupHtml(s) {
+    const ll = `${(+s.lat).toFixed(6)}, ${(+s.lng).toFixed(6)}`;
+    const typeLabel = s.typeLabel || s.type || '';
+    const best = s.bestLight ? `<span class="tag">Bestes Licht: ${s.bestLight}</span>` : '';
+    const insta = s.instagram || s.insta || '';
+    const skip = s.skipper || '';
+    return `
+      <div class="popup">
+        <h3>${s.name || 'Unbenannter Spot'}</h3>
+        <div class="meta">${typeLabel}${best ? ' · ' + best : ''}</div>
+        <div class="sec"><strong>Für Instagram</strong><br>${insta || '—'}</div>
+        <div class="sec"><strong>Skipper Tipps</strong><br>${skip || '—'}</div>
+        <div class="sec coords">Koordinaten: <span class="coords mono">${ll}</span>
+          <button class="copy" data-ll="${ll}">kopieren</button>
+          <a class="copy" style="margin-left:.5rem" target="_blank" rel="noopener" href="https://maps.google.com/?q=${ll}">Google Maps</a>
         </div>
-      </div>
-      <ol id="spot-list" class="spot-list" aria-label="Ergebnisse"></ol>
-      <footer class="credits">
-        <p>Koordinaten & Hinweise ohne Gewähr. Bitte aktuelle Karten/Anzeigen vor Ort beachten.</p>
-      </footer>
-    </aside>
-    <section class="map-wrap">
-      <div id="map" class="map" role="application" aria-label="Karte mit Instagram-Spots"></div>
-      <div class="map-legend" aria-hidden="false">
-        <span class="dot dot-a"></span> Ankerbucht
-        <span class="dot dot-h"></span> Hafen
-        <span class="dot dot-l"></span> Landmarke
-      </div>
-    </section>
-  </main>
+      </div>`;
+  }
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="js/top-spots.js"></script>
-</body>
-</html>
+  function clearMarkers() {
+    markers.forEach(m => map.removeLayer(m));
+    markers.length = 0;
+    markerById.clear();
+  }
+
+  function render(spots) {
+    clearMarkers();
+    listEl.innerHTML = '';
+    counterEl.textContent = `Spots: ${spots.length}`;
+
+    const bounds = [];
+    spots.forEach(s => {
+      const lat = +s.lat, lng = +s.lng;
+      if (!validLatLng(lat, lng)) {
+        console.warn('[TopSpots] Skip invalid coords for', s.name, lat, lng);
+        return;
+      }
+      const type = (s.type || 'anchorage');
+      const marker = L.marker([lat, lng], { icon: icons[type] || DefaultIcon }).bindPopup(popupHtml(s));
+      marker.addTo(map);
+      markers.push(marker);
+      markerById.set(s.id, marker);
+      bounds.push([lat, lng]);
+
+      const li = document.createElement('li');
+      const meta = [s.typeLabel || s.type || '', s.short || ''].filter(Boolean).join(' · ');
+      li.innerHTML = `
+        <div class="name">${s.name || 'Unbenannter Spot'}</div>
+        <div class="meta">${meta || '&nbsp;'}</div>
+        <a href="spot.html?id=${encodeURIComponent(s.id)}" class="more">Mehr…</a>
+      `;
+      li.addEventListener('click', (ev) => {
+        // avoid double navigation when More… is clicked
+        if (ev.target.closest('.more')) return;
+        map.setView([lat, lng], 14);
+        marker.openPopup();
+      });
+      listEl.appendChild(li);
+    });
+
+    if (bounds.length) {
+      map.fitBounds(L.latLngBounds(bounds).pad(0.12));
+    } else {
+      map.setView([43.32, 16.45], 9);
+    }
+  }
+
+  function applyFilters() {
+    const query = (searchEl.value || '').trim().toLowerCase();
+    const allowed = new Set(checkEls.filter(c => c.checked).map(c => c.value));
+    const filtered = allSpots.filter(s => allowed.has(s.type || 'anchorage') && (
+      !query ||
+      (s.name || '').toLowerCase().includes(query) ||
+      (s.short || '').toLowerCase().includes(query) ||
+      (s.island || '').toLowerCase().includes(query) ||
+      (s.typeLabel || s.type || '').toLowerCase().includes(query)
+    ));
+    render(filtered);
+    if (!filtered.length) {
+      console.warn('[TopSpots] No results for query:', query, 'allowed:', [...allowed]);
+    }
+  }
+
+  // Windy deeplink following the map center
+  const windyLink = document.getElementById('windy-link');
+  function updateWindyLink() {
+    if (!windyLink) return;
+    const c = map.getCenter();
+    windyLink.href = `https://www.windy.com/${c.lat.toFixed(3)}/${c.lng.toFixed(3)}?2025082400,${c.lat.toFixed(3)},${c.lng.toFixed(3)},10`;
+  }
+  map.on('moveend', updateWindyLink);
+  updateWindyLink();
+
+  // Copy button handler (event delegation)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy');
+    if (!btn || !btn.dataset.ll) return;
+    navigator.clipboard?.writeText(btn.dataset.ll).then(() => {
+      const old = btn.textContent;
+      btn.textContent = 'kopiert ✓';
+      setTimeout(() => btn.textContent = old || 'kopieren', 1100);
+    }).catch(() => {});
+  });
+
+  // --- Load data ------------------------------------------------------------
+  (async function init() {
+    try {
+      console.log('[TopSpots] fetching', DATA_URL);
+      const res = await fetch(DATA_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const raw = await res.json();
+      const spots = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.spots) ? raw.spots : []);
+      allSpots = (spots || []).filter(s => Number.isFinite(+s.lat) && Number.isFinite(+s.lng) && s.id && s.name);
+      console.log('[TopSpots] loaded', allSpots.length);
+      // Ensure default checkboxes are checked
+      checkEls.forEach(c => c.checked = true);
+      applyFilters();
+    } catch (err) {
+      console.error('[TopSpots] load error', err);
+      listEl.innerHTML = '<li style="padding:1rem;color:#b91c1c">Konnte Spots nicht laden. Prüfe content/map/topspots.json</li>';
+    }
+  })();
+
+  // --- UI Events ------------------------------------------------------------
+  searchEl.addEventListener('input', applyFilters);
+  checkEls.forEach(c => c.addEventListener('change', applyFilters));
+})();
+
+{
+  "spots": [
+    {
+      "id": "krknjasi-blue-lagoon",
+      "name": "Blue Lagoon (Krknjaši, Drvenik Veli)",
+      "type": "anchorage",
+      "typeLabel": "Ankerbucht · Sand",
+      "lat": 43.401920,
+      "lng": 16.207970,
+      "bestLight": "vor 10:00 & ab 15:30",
+      "short": "Hellblauer Sandteller – Drohne!",
+      "instagram": "Karibikfarben über hellem Sandplateau zwischen Krknjaš Veli & Mali – Drohnen-Topshots bei ruhiger See, Badeleiter-Shots mit Spiegelungen.",
+      "skipper": "Mittagsstopp. 3–8 m Sand/Seegras, Anker auf Sand, gut einfahren; offen bei S/SW. Hochsaison sehr voll – früh/spät.",
+      "island": "Drvenik Veli"
+    },
+    {
+      "id": "vela-rina",
+      "name": "Vela Rina (Drvenik Mali)",
+      "type": "anchorage",
+      "typeLabel": "Sandbucht",
+      "lat": 43.446389,
+      "lng": 16.085278,
+      "bestLight": "Vormittag",
+      "short": "Pastelltöne, flach, SUP",
+      "instagram": "Viel Himmel, viel Pastell – minimalistische Bilder über flachem Türkis und Sandwellen.",
+      "skipper": "Lunch-Anchor 5–7 m Sand; bei Jugo/Südschwell unruhig. In Saison Bojen vor der Konoba.",
+      "island": "Drvenik Mali"
+    },
+    {
+      "id": "sesula",
+      "name": "Uvala Šešula (Šolta, Maslinica S)",
+      "type": "anchorage",
+      "typeLabel": "Naturhafen · Bojen",
+      "lat": 43.393817,
+      "lng": 16.210733,
+      "bestLight": "Sunset",
+      "short": "Schmale Fjordbucht",
+      "instagram": "Schmale Zackenbucht, goldenes Wasser in der blauen Stunde – Shuttle zur Konoba im Bild.",
+      "skipper": "Bojen & Landleinen. Sehr guter Schutz außer langem SW-Schwell. 3–8 m Sand/Mud. Reservieren sinnvoll.",
+      "island": "Šolta"
+    },
+    {
+      "id": "maslinica-marina",
+      "name": "Maslinica Marina (Šolta)",
+      "type": "harbor",
+      "typeLabel": "Hafen · Moorings",
+      "lat": 43.398150,
+      "lng": 16.206450,
+      "bestLight": "Abend",
+      "short": "Yacht-Glamour am Schloss",
+      "instagram": "Steglichter, Steinfassaden, Gläser klirren – eleganter Hafen-Look bei Nacht.",
+      "skipper": "VHF 17, Reservierung empfohlen; bei W kann Schwell reinkommen.",
+      "island": "Šolta"
+    },
+    {
+      "id": "lucice",
+      "name": "Uvala Lučice (Brač, W-Küste)",
+      "type": "anchorage",
+      "typeLabel": "Bojen/Anker",
+      "lat": 43.310267,
+      "lng": 16.445833,
+      "bestLight": "Nachmittag/Sunset",
+      "short": "Drei Fingerbuchten, Smaragd",
+      "instagram": "Kiefern über Kalkkanten, fingerförmige Arme – Gimbal-Fahrten am SUP entlang der Felsen.",
+      "skipper": "Bojen bewirtschaftet; guter Schutz außer starkem Jugo. 5–12 m Sand/Seegras.",
+      "island": "Brač"
+    },
+    {
+      "id": "osibova",
+      "name": "Osibova (Brač, Milna S)",
+      "type": "anchorage",
+      "typeLabel": "Bojenpflicht z.T.",
+      "lat": 43.313800,
+      "lng": 16.435400,
+      "bestLight": "Mittag",
+      "short": "Pinien & Felsplatten",
+      "instagram": "Dunkeltürkis, Pinienhänge, Tele-Kompression – sehr fotogen vom Vorschiff.",
+      "skipper": "Bojenfeld; teils Ankern untersagt innerhalb Konzession. Offen bei S-Schwell.",
+      "island": "Brač"
+    },
+    {
+      "id": "smrka-bunker",
+      "name": "Uvala Smrka – U-Boot-Bunker (Brač)",
+      "type": "landmark",
+      "typeLabel": "Lost Place",
+      "lat": 43.281400,
+      "lng": 16.507620,
+      "bestLight": "Vormittag",
+      "short": "Dramatischer Tunnelschlund",
+      "instagram": "Grelles Blau draußen vs. dunkler Bunkerschlund – High-Contrast Shots aus dem Dinghy.",
+      "skipper": "Nur bei ruhigem Wetter rein; Fender/Schutz. Nicht über Nacht im Tunnel; davor ankern.",
+      "island": "Brač"
+    },
+    {
+      "id": "vinogradisce",
+      "name": "Vinogradišće (Palmižana, Pakleni)",
+      "type": "anchorage",
+      "typeLabel": "Bojenfeld · Beachbars",
+      "lat": 43.157320,
+      "lng": 16.389670,
+      "bestLight": "Mittag bis Sonnenuntergang",
+      "short": "Lagune & Holzstege",
+      "instagram": "Smaragdlagune mit Holzstegen, Beach-Lunch-Vibes – Sonnenpunkte auf dem Wasser.",
+      "skipper": "Sehr gefragt; 40+ Bojen. Bei West-Schwell lieber ACI Palmižana Nordseite. Wassertaxi nach Hvar.",
+      "island": "Pakleni Otoci"
+    },
+    {
+      "id": "hvar-fortica",
+      "name": "Hvar – Festung Fortica Španjola",
+      "type": "landmark",
+      "typeLabel": "Aussicht",
+      "lat": 43.174870,
+      "lng": 16.441860,
+      "bestLight": "Golden Hour + Blue Hour",
+      "short": "Der Hvar-Signature-View",
+      "instagram": "Altstadt & Pakleni im Panorama – warmes Gold, später Stadtlichterkette an der Riva.",
+      "skipper": "Anlanden Hvar Town (Hafen/Boje), dann zu Fuß hoch.",
+      "island": "Hvar"
+    },
+    {
+      "id": "stiniva",
+      "name": "Stiniva (Vis, S-Küste)",
+      "type": "landmark",
+      "typeLabel": "Schluchtbucht",
+      "lat": 43.020160,
+      "lng": 16.171820,
+      "bestLight": "früh / sehr spät",
+      "short": "Felsentor & Mini-Amphitheater",
+      "instagram": "Ikonischer Durchlass – vom Dinghy in die Bucht eingerahmt von Kalkwänden.",
+      "skipper": "Kurzstopp, Bojen schnell voll; Einfahrt eng. Auf Schwimmer achten.",
+      "island": "Vis"
+    },
+    {
+      "id": "green-cave",
+      "name": "Zelena špilja (Green Cave, Ravnik)",
+      "type": "landmark",
+      "typeLabel": "Grotte",
+      "lat": 43.015329,
+      "lng": 16.224360,
+      "bestLight": "um die Mittagszeit",
+      "short": "Smaragdkegel durchs Dachloch",
+      "instagram": "Licht fällt durch die Öffnung und färbt Wasser & Wände smaragdgrün.",
+      "skipper": "Ein-/Ausfahrt organisiert; nur bei ruhiger See. Kurzer Fotostopp.",
+      "island": "Ravnik"
+    },
+    {
+      "id": "blue-cave",
+      "name": "Blue Cave (Modra špilja, Biševo)",
+      "type": "landmark",
+      "typeLabel": "Grotte",
+      "lat": 42.980433,
+      "lng": 16.022033,
+      "bestLight": "11–13 Uhr",
+      "short": "Kobaltblaues Leuchten",
+      "instagram": "Silberne Konturen im kobaltblauen Spiegel – surreal.",
+      "skipper": "Zulauf via Mezoporat; nur lizenzierte Boote in die Höhle. Wartezeiten einkalkulieren.",
+      "island": "Biševo"
+    },
+    {
+      "id": "stoncica",
+      "name": "Stončica (Vis, NO-Bucht)",
+      "type": "anchorage",
+      "typeLabel": "Sandstrand + Konoba",
+      "lat": 43.064800,
+      "lng": 16.241700,
+      "bestLight": "Mittag",
+      "short": "Seltene Sandbucht auf Vis",
+      "instagram": "Tamarisken & heller Sand – chillige Strand-Shots mit Oleander.",
+      "skipper": "Bojenfeld (~20+). Hinten flach (Badezone). Offen nach N.",
+      "island": "Vis"
+    },
+    {
+      "id": "zlatni-rat",
+      "name": "Zlatni Rat (Bol, Brač)",
+      "type": "landmark",
+      "typeLabel": "Kieselzunge",
+      "lat": 43.257320,
+      "lng": 16.642170,
+      "bestLight": "früh",
+      "short": "Wandernde Strandspitze",
+      "instagram": "Tele/Drone entlang der Spitze – Linien der Brandung im Weiß-auf-Türkis.",
+      "skipper": "Tagesstopp; oft Schwell. Badezone strikt respektieren.",
+      "island": "Brač"
+    },
+    {
+      "id": "trogir-old-town",
+      "name": "Trogir Altstadt (UNESCO)",
+      "type": "landmark",
+      "typeLabel": "Altstadt",
+      "lat": 43.512500,
+      "lng": 16.251670,
+      "bestLight": "Morgen/Abend",
+      "short": "Venezianische Kulisse",
+      "instagram": "Gassen, Portale, Riva – Golden-Hour-Glanzeffekte.",
+      "skipper": "ACI/Marina Trogir; Brückenpassage eng, Strömung beachten.",
+      "island": "—"
+    },
+    {
+      "id": "skrivena-luka",
+      "name": "Skrivena Luka (Lastovo) & Leuchtturm Struga",
+      "type": "anchorage",
+      "typeLabel": "Naturhafen",
+      "lat": 42.734131,
+      "lng": 16.890444,
+      "bestLight": "Sunset",
+      "short": "Hidden Bay + Leuchtturm",
+      "instagram": "Türkisgrüne Ruhe, Struga-Lighthouse als dramatische Kulisse.",
+      "skipper": "Sehr guter Schutz; 6–12 m Sand. Leuchtturm südlich als Ausflug.",
+      "island": "Lastovo"
+    }
+  ]
+}
+
+/* ensure monospaced coords and better tap targets */
+.mono{ font-family: ui-monospace, Menlo, Consolas, "Liberation Mono", monospace; }
+.spot-list li a.more{ display:inline-block; margin-top:.25rem; }
+
+/* small-screen layout safety */
+@media (max-width:768px){
+  .panel{ order:2; height:44vh; }
+  .map{ order:1; height:56vh; }
+}
+
+self.addEventListener('fetch', event => {
+  const reqUrl = new URL(event.request.url);
+  if (reqUrl.pathname.endsWith('/sailing/content/map/topspots.json')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .catch(() => new Response(JSON.stringify({ spots: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } }))
+    );
+    return;
+  }
+
+  // existing fetch handler code continues here...
+});
