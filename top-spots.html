@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top Spots – Dalmatien (Insta & Skipper)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="css/top-spots.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="Zur Startseite">⛵︎ Sailing Dalmatia</a>
+      <nav class="main-nav" aria-label="Hauptmenü">
+        <a href="index.html">Route</a>
+        <a href="top-spots.html" class="active" aria-current="page">Top&nbsp;Spots</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel" aria-label="Filter & Liste">
+      <div class="filters">
+        <input id="q" type="search" placeholder="Suchen … (z.B. Hvar, Bucht)" aria-label="Suche nach Spots" />
+        <div class="chips">
+          <label><input type="checkbox" value="anchorage" checked> Ankerbucht</label>
+          <label><input type="checkbox" value="harbor" checked> Hafen</label>
+          <label><input type="checkbox" value="landmark" checked> Landmarke</label>
+        </div>
+      </div>
+      <ol id="spot-list" class="spot-list" aria-label="Ergebnisse"></ol>
+      <footer class="credits">
+        <p>Koordinaten & Hinweise ohne Gewähr. Bitte aktuelle Karten/Anzeigen vor Ort beachten.</p>
+      </footer>
+    </aside>
+    <section class="map-wrap">
+      <div id="map" class="map" role="application" aria-label="Karte mit Instagram-Spots"></div>
+      <div class="map-legend" aria-hidden="false">
+        <span class="dot dot-a"></span> Ankerbucht
+        <span class="dot dot-h"></span> Hafen
+        <span class="dot dot-l"></span> Landmarke
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/top-spots.js"></script>
+</body>
+</html>
