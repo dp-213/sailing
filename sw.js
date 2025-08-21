@@ -1,7 +1,7 @@
-const CACHE_NAME = 'sailing-v1';
+const CACHE_NAME = 'sailing-v2'; // Version erhöht für Clean Slate
 const BASE_PATH = '/sailing';
 
-// Assets die beim Install gecached werden
+// Vollständige Liste ALLER Assets
 const ASSETS = [
   // HTML
   `${BASE_PATH}/`,
@@ -16,86 +16,82 @@ const ASSETS = [
   `${BASE_PATH}/js/topspots.js`,
   `${BASE_PATH}/js/spot.js`,
   
+  // Data
+  `${BASE_PATH}/content/map/topspots.json`,
+  
   // Icons
   `${BASE_PATH}/assets/icons/anchorage.svg`,
   `${BASE_PATH}/assets/icons/harbor.svg`,
   `${BASE_PATH}/assets/icons/landmark.svg`,
+  `${BASE_PATH}/assets/icons/app-icon-192.png`,
+  `${BASE_PATH}/assets/icons/app-icon-512.png`,
   
-  // CDN
+  // CDN Resources
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 ];
 
-// Installation: Cache alle wichtigen Assets
-self.addEventListener('install', (event) => {
+// Cache beim Install
+self.addEventListener('install', event => {
   console.log('[SW] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[SW] Caching app shell...');
+        console.log('[SW] Pre-caching assets...');
         return cache.addAll(ASSETS);
       })
+      .catch(err => console.error('[SW] Pre-cache failed:', err))
   );
 });
 
-// Aktivierung: Lösche alte Caches
-self.addEventListener('activate', (event) => {
+// Alte Caches beim Activate löschen
+self.addEventListener('activate', event => {
   console.log('[SW] Activating...');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames
-          .filter(name => name !== CACHE_NAME)
-          .map(name => {
-            console.log('[SW] Deleting old cache:', name);
-            return caches.delete(name);
-          })
-      );
-    })
+    caches.keys().then(keys => Promise.all(
+      keys
+        .filter(key => key !== CACHE_NAME)
+        .map(key => {
+          console.log('[SW] Removing old cache:', key);
+          return caches.delete(key);
+        })
+    ))
   );
 });
 
-// Fetch: Network-first für JSON, Cache-first für Assets
-self.addEventListener('fetch', (event) => {
-  // JSON immer vom Network laden
-  if (event.request.url.endsWith('topspots.json')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (!response.ok) throw new Error('Network response was not ok');
-          return response;
-        })
-        .catch(err => {
-          console.error('[SW] JSON fetch failed:', err);
-          return caches.match(event.request);
-        })
-    );
-    return;
-  }
-
-  // Für alle anderen Requests: Cache-first
+// Fetch-Handler mit Fallback
+self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
-      .then(cached => {
-        if (cached) {
-          return cached;
+      .then(cachedResponse => {
+        // Versuche zuerst den Cache
+        if (cachedResponse) {
+          console.log('[SW] Serving from cache:', event.request.url);
+          return cachedResponse;
         }
+
+        // Sonst vom Netzwerk laden
         return fetch(event.request)
           .then(response => {
-            if (!response || response.status !== 200) {
-              return response;
+            // Cache nur erfolgreiche Responses
+            if (response && response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(event.request, responseToCache);
+                  console.log('[SW] Caching new resource:', event.request.url);
+                });
             }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
             return response;
+          })
+          .catch(err => {
+            console.error('[SW] Fetch failed:', err);
+            // Wichtig: Leere 404-Response statt null zurückgeben
+            return new Response('', {status: 404});
           });
       })
   );
 });
-  );
 });
