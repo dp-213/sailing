@@ -18,8 +18,11 @@ html {
 body {
   height: 100%;
 }
-section[id^="day"] {
+section[id], section[id^="day"] {
   scroll-margin-top: 80px;
+}
+.mono { 
+  font-family: ui-monospace, Menlo, Consolas, monospace; 
 }
 body {
   margin: 0;
@@ -66,6 +69,24 @@ body {
   display: grid;
   grid-template-columns: 360px 1fr;
   min-height: calc(100vh - 58px);
+}
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .panel {
+    grid-row: 2;
+    border-right: none;
+    border-top: 1px solid var(--border);
+  }
+  .chips label,
+  .filters input[type=search],
+  .spot-list a,
+  .spot-list button {
+    min-height: 44px;
+    padding: 12px;
+  }
 }
 .panel {
   background: var(--panel);

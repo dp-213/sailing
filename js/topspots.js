@@ -1,5 +1,4 @@
-const BASE_PATH = '/sailing';
-const DATA_URL = `${BASE_PATH}/content/map/topspots.json?v=2025-08-21`;
+const DATA_URL = new URL('content/map/topspots.json?v=2025-08-21-1', document.baseURI).toString();
 
 // DOM Elements
 const spotList = document.getElementById('spot-list');
@@ -41,26 +40,25 @@ const showToast = (message, duration = 5000) => {
   // Formatiere Koordinaten für Copy-Button
 const formatCoords = (lat, lng) => `${lat.toFixed(6)}°N, ${lng.toFixed(6)}°E`;
 
-// Rendere Popup-Inhalt
-const createPopup = (spot) => {
-  const div = document.createElement('div');
-  div.innerHTML = `
-    <div style="min-width:280px">
-      <h3 style="margin:0 0 .5rem">${spot.name}</h3>
-      <div style="margin-bottom:.75rem">
-        <span class="badge">${spot.typeLabel}</span>
-        <span class="badge badge-light">${spot.bestLight}</span>
-      </div>
-      <div style="margin-bottom:.75rem">${spot.instagram}</div>
-      <div style="color:#4b5563;font-size:.95rem">${spot.skipper}</div>
-      <div class="button-row">
-        <button class="copy" data-coords="${formatCoords(spot.lat, spot.lng)}">
-          ${formatCoords(spot.lat, spot.lng)}
-        </button>
-        <a href="spot.html?id=${spot.id}" class="more">Details →</a>
+function popupHtml(s) {
+  const ll = `${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}`;
+  return `
+    <div class="popup">
+      <h3>${s.name}</h3>
+      <div class="meta">${s.typeLabel || s.type || ''} ${s.bestLight ? `· ${s.bestLight}` : ''}</div>
+      <div class="sec"><strong>Für Instagram</strong><br>${s.instagram || s.insta || ''}</div>
+      <div class="sec"><strong>Skipper Tipps</strong><br>${s.skipper || ''}</div>
+      <div class="sec coords">Koordinaten: <span class="mono">${ll}</span>
+        <button class="copy" data-ll="${ll}">kopieren</button>
       </div>
     </div>
   `;
+}
+
+// Rendere Popup-Inhalt
+const createPopup = (spot) => {
+  const div = document.createElement('div');
+  div.innerHTML = popupHtml(spot);
 
   // Copy-Button Handler
   const copyBtn = div.querySelector('.copy');
@@ -111,26 +109,32 @@ let map = null;
 
 // Load and initialize
 async function init() {
-  spots = await fetchSpots();
-  initMap();
-  bindSearch();
-  bindFilters();
-  renderSpots();
-}
-
-async function fetchSpots() {
   try {
-    const response = await fetch(DATA_URL);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
+    spots = await loadSpots();
+    console.log('[TopSpots] loaded', spots.length, 'spots from', DATA_URL);
+    initMap();
+    bindSearch();
+    bindFilters();
+    renderSpots();
   } catch (error) {
     console.error('Fehler beim Laden der Spots:', error);
-    showToast('Fehler beim Laden der Spots. Bitte später erneut versuchen.');
-    return [];
+    const toast = document.createElement('div');
+    toast.className = 'toast error';
+    toast.innerHTML = `
+      Fehler beim Laden der Spots.
+      <button onclick="init()">Erneut laden</button>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
   }
+}
+
+async function loadSpots() {
+  const res = await fetch(DATA_URL, { cache: 'no-store' });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  const raw = await res.json();
+  const spots = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.spots) ? raw.spots : []);
+  return spots.filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
 }
 
 // Initialisiere Karte
@@ -166,6 +170,11 @@ function bindFilters() {
 
 // Rendere gefilterte Spots
 function renderSpots(search = '') {
+  // Aktiviere standardmäßig alle Filter beim ersten Aufruf
+  if (!document.querySelector('.chips input:checked')) {
+    typeFilters.forEach(f => f.checked = true);
+  }
+  
   const activeTypes = Array.from(typeFilters)
     .filter(f => f.checked)
     .map(f => f.value);
@@ -174,6 +183,24 @@ function renderSpots(search = '') {
   
   // Liste leeren und neu befüllen
   spotList.innerHTML = '';
+  
+  // Zähler anzeigen
+  const counter = document.createElement('div');
+  counter.className = 'spot-counter';
+  counter.textContent = `Spots: ${filteredSpots.length}`;
+  spotList.appendChild(counter);
+  
+  if (filteredSpots.length === 0) {
+    const noResults = document.createElement('div');
+    noResults.className = 'no-results';
+    noResults.innerHTML = `
+      Keine Treffer.
+      <button onclick="resetFilters()">Filter zurücksetzen</button>
+    `;
+    spotList.appendChild(noResults);
+    return;
+  }
+  
   filteredSpots.forEach(spot => {
     const li = createListItem(spot);
     li.addEventListener('click', () => {
