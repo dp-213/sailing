@@ -158,13 +158,85 @@ async function setupTopSpotsLayer(map){
     spots = DEFAULT_TOPSPOTS;
   }
   const layer = L.layerGroup();
+  const markers = [];
   spots.forEach(p=>{
-    const m = L.marker([p.coords[0], p.coords[1]]);
+    const lat = Number(p.coords[0]);
+    const lon = Number(p.coords[1]);
+    const m = L.marker([lat, lon]);
     m.bindPopup(createTopSpotPopup(p), { maxWidth: 320 });
     layer.addLayer(m);
+    markers.push({ m, p });
   });
-  // global referenzieren, um togglen zu können
-  window._topSpots = { layer, spots };
+  // global referenzieren, um togglen & filtern zu können
+  window._topSpots = { layer, spots, markers };
+}
+
+function applyTopSpotsFilter(filters){
+  if(!window._topSpots) return;
+  const { layer, markers } = window._topSpots;
+  layer.clearLayers();
+  markers.forEach(({m,p})=>{
+    const kindBase = (p.kind||'').split('·')[0].trim(); // "Bucht" | "Hafen" | "Aussicht"
+    const passKind = !filters.kind.size || filters.kind.has(kindBase);
+    const passPop  = !filters.pop.size  || filters.pop.has((p.popularity||'').trim());
+    if(passKind && passPop){ layer.addLayer(m); }
+  });
+}
+
+function buildTopSpotsControls(map){
+  // UI-Box erzeugen, falls nicht vorhanden
+  let box = document.querySelector('.map-controls');
+  if(!box){
+    box = document.createElement('div');
+    box.className = 'map-controls';
+    box.innerHTML = `
+      <h4>Filter</h4>
+      <div class="row" id="chips-kind"></div>
+      <div class="row" id="chips-pop"></div>
+      <div class="row" style="justify-content:space-between;margin-top:.35rem">
+        <a id="windy-link" href="#" target="_blank">Windy öffnen</a>
+        <a id="reset-filters" href="#">Reset</a>
+      </div>
+    `;
+    document.body.appendChild(box);
+  }
+  const KINDS = ['Bucht','Hafen','Aussicht'];
+  const POPS  = ['Sehr beliebt','Hotspot','Local-Liebling','Geheimtipp+'];
+  const filters = { kind: new Set(), pop: new Set() };
+  const mkChip = (label, set)=>{
+    const el = document.createElement('span');
+    el.className = 'chip';
+    el.textContent = label;
+    el.addEventListener('click', ()=>{
+      if(set.has(label)) { set.delete(label); el.classList.remove('active'); }
+      else { set.add(label); el.classList.add('active'); }
+      applyTopSpotsFilter(filters);
+    });
+    return el;
+  };
+  const kindRow = box.querySelector('#chips-kind');
+  const popRow  = box.querySelector('#chips-pop');
+  kindRow.textContent = ''; popRow.textContent = '';
+  KINDS.forEach(k=> kindRow.appendChild(mkChip(k, filters.kind)) );
+  POPS.forEach(p=>  popRow.appendChild(mkChip(p, filters.pop))  );
+
+  // Windy-Link dynamisch anhand Kartenmitte aktualisieren
+  const windy = box.querySelector('#windy-link');
+  const updateWindy = ()=>{
+    const c = map.getCenter();
+    const lat = c.lat.toFixed(3), lon = c.lng.toFixed(3);
+    windy.href = `https://www.windy.com/${lat}/${lon}?2025082400,${lat},${lon},9`;
+  };
+  updateWindy();
+  map.on('moveend', updateWindy);
+
+  // Reset
+  box.querySelector('#reset-filters').addEventListener('click', (e)=>{
+    e.preventDefault();
+    filters.kind.clear(); filters.pop.clear();
+    box.querySelectorAll('.chip.active').forEach(ch=> ch.classList.remove('active'));
+    applyTopSpotsFilter(filters);
+  });
 }
 
 async function init(){
@@ -266,6 +338,7 @@ async function init(){
   const map = L.map('map').setView([43.45,16.35], 8);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
   await setupTopSpotsLayer(map);
+  buildTopSpotsControls(map);
   const route=await fetch('content/map/route.geojson').then(r=>r.json()).catch(()=>null);
   const places=await fetch('content/map/places.json').then(r=>r.json()).catch(()=>null);
   if(route){

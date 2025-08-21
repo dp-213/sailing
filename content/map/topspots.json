@@ -1,90 +1,19 @@
-[
-  {
-    "name": "Blue Lagoon (Krknjaši), Drvenik Veli",
-    "coords": [43.441675, 16.176139],
-    "kind": "Mittagsstopp · Boje/Anker",
-    "popularity": "Sehr beliebt",
-    "instagram": "Karibik-Türkis über hellem Sand – Drohnenfoto zwischen Krknjaš Veli & Mali. Flachwasser, zerrissene Blautöne, weißer Saum.",
-    "tips": "Tagsüber an Sandflecken ankern/Boje; offen gegen N/O-Winde, am besten bei Maestral (NW) moderat. Hochsaison: früh da sein."
-  },
-  {
-    "name": "Vinogradišće Bay (Palmižana, Sv. Klement)",
-    "coords": [43.158000, 16.390280],
-    "kind": "Bucht · Bojenfeld",
-    "popularity": "Hotspot",
-    "instagram": "Pinienrahmen, smaragdgrüne Zunge, Beach-Clubs (Laganini & Co.) – goldenes Abendlicht auf Wassertaxis Richtung Hvar.",
-    "tips": "Guter Schutz bei N/NW, exponiert bei Jugo (S). Bojen statt Ankern. 10–15 Min Taxiboot nach Hvar."
-  },
-  {
-    "name": "Festung Fortica (Španjola) – Hvar Viewpoint",
-    "coords": [43.174870, 16.441860],
-    "kind": "Aussicht · Land",
-    "popularity": "Klassiker",
-    "instagram": "Ikonisches Hvar-Panorama über Altstadt & Pakleni-Inseln. Beste Shots Golden/Blue Hour – Stadtlichter + Ankerfeld.",
-    "tips": "Mit Taxiboot nach Hvar und Aufstieg zu Fuß. Kein Ankerplatz; Bildstopp an der Riva, Crew-Foto oben."
-  },
-  {
-    "name": "Uvala Lučice (Brač) – Restaurant & Bojen",
-    "coords": [43.310067, 16.446517],
-    "kind": "Bucht · Bojen/Restaurant",
-    "popularity": "Sehr beliebt",
-    "instagram": "Drei fingerförmige Becken, Kiefern & Kalkwände – vom SUP durchs kristallklare Becken zur Abendrunde.",
-    "tips": "Bojenfeld (Restaurant Lučice). Gut geschützt, bei starkem S etwas Schwell. Früh ankommen; Landleine möglich."
-  },
-  {
-    "name": "Uvala Šešula (Šolta) – Naturhafen bei Maslinica",
-    "coords": [43.392470, 16.210070],
-    "kind": "Bucht · Boje/Anker",
-    "popularity": "Beliebt",
-    "instagram": "Langgezogene Zackenbucht mit Glaswasser. Sunset-Silhouetten der sieben Inselchen vor Maslinica.",
-    "tips": "Sehr guter Wetterschutz; gerne Landleinen. Restaurants an Land per Dinghy erreichbar."
-  },
-  {
-    "name": "Maslinica (Šolta) – Marina & Schloss",
-    "coords": [43.398392, 16.207783],
-    "kind": "Hafen",
-    "popularity": "Beliebt",
-    "instagram": "Abendshot: Yachten unterm beleuchteten Schloss Martinis Marchi. Kopfsteinpflaster, Pastellhimmel.",
-    "tips": "Marina-Übernachtung komfortabel. Früh einlaufen; Alternativ Šešula (1 sm S), falls voll."
-  },
-  {
-    "name": "Uvala Smrka (Brač) – U-Boot-Tunnel",
-    "coords": [43.290200, 16.494300],
-    "kind": "Ankerbucht · Lost Place",
-    "popularity": "Geheimtipp+",
-    "instagram": "Dramatische Felskulisse + Ex-Militärtunnel. Kontrastreiche Fotos: dunkler Tunnel vs. türkisfarbene Außenbucht.",
-    "tips": "Guter Schutz außer bei S/Jugo; im NE-Teil auf Unterwasserfelsen achten. Auf Sand ankern; Landleinen empfohlen."
-  },
-  {
-    "name": "Zlatni Rat (Bol, Brač) – ‚Goldenes Horn‘",
-    "coords": [43.255831, 16.633800],
-    "kind": "Strand · Fotostopp",
-    "popularity": "Sehr beliebt",
-    "instagram": "Luftaufnahmen/Tele: die wandernde Kieszunge in Pfeilform. Klarstes Türkis mit Brandungsspitze.",
-    "tips": "Zum Baden top, aber offener Schwell möglich. Für ruhigen Fotoanker weiträumig frei halten; Drohne nur wo erlaubt."
-  },
-  {
-    "name": "Stiniva (Vis) – Schluchtbucht",
-    "coords": [43.021343, 16.171737],
-    "kind": "Tagesanker · Natur",
-    "popularity": "Sehr beliebt",
-    "instagram": "Der Klassiker: enger Felsdurchlass, innen Amphitheater-Strand. Spektakulär aus dem Dinghy.",
-    "tips": "Nur bei ruhigem Wetter! Draußen ankern und mit Dinghy durch die Öffnung. Kein Übernachtungsplatz; viel Verkehr mittags."
-  },
-  {
-    "name": "Zelena špilja (Grüne Grotte), Ravnik",
-    "coords": [43.015329, 16.224360],
-    "kind": "Spot · Einfahrt per Boot",
-    "popularity": "Beliebt",
-    "instagram": "Sonnenstrahl durchs Dachloch – grün glühendes Wasser. Gegen Mittag hellstes Licht.",
-    "tips": "Ein-/Ausfahrt organisiert; Regeln/Eintritt beachten. Nicht bei Seegang. Kurzanker draußen oder treiben lassen."
-  },
-  {
-    "name": "Uvala Tatinja (Šolta) – helle Sandflecken",
-    "coords": [43.369450, 16.283217],
-    "kind": "Ankerbucht · Mittagsstopp",
-    "popularity": "Local-Liebling",
-    "instagram": "Hufeisenbucht, Sandflecken im Türkis – perfekte Mittagsfarben. Felsige Kanten geben Kontrast.",
-    "tips": "Sand/Seegras – sauber auf Sand fallen lassen. Am ruhigsten bei W-Sektor; bei N/NE offen."
-  }
-]
+<html lang="en">
+<head>
+  <style>
+    .top-nav{display:flex;gap:.75rem;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #e5e7eb;position:sticky;top:0;background:#fff;z-index:1000}
+    .top-nav a{color:#111827;text-decoration:none;padding:.35rem .6rem;border-radius:.5rem}
+    .top-nav a:hover,.top-nav a.active{background:#f3f4f6}
+    .map-controls{position:absolute;right:12px;top:72px;background:#ffffffd9;border:1px solid #e5e7eb;border-radius:.5rem;padding:.5rem .6rem;backdrop-filter:saturate(180%) blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:.85rem}
+    .map-controls h4{margin:.2rem 0 .4rem;font-size:.9rem}
+    .map-controls .row{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem}
+    .chip{display:inline-block;padding:.15rem .45rem;border-radius:.5rem;border:1px solid #e5e7eb;cursor:pointer;user-select:none}
+    .chip.active{background:#eef2ff;border-color:#c7d2fe}
+    .map-controls a{color:#0ea5e9;text-decoration:none}
+  </style>
+</head>
+<body>
+  <nav class="top-nav" id="itinerary-nav">
+    <a href="./" class="active">Route</a>
+    <a href="#top-spots" id="nav-top-spots">Top spots</a>
+  </nav>
