@@ -1,19 +1,62 @@
-<html lang="en">
-<head>
-  <style>
-    .top-nav{display:flex;gap:.75rem;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #e5e7eb;position:sticky;top:0;background:#fff;z-index:1000}
-    .top-nav a{color:#111827;text-decoration:none;padding:.35rem .6rem;border-radius:.5rem}
-    .top-nav a:hover,.top-nav a.active{background:#f3f4f6}
-    .map-controls{position:absolute;right:12px;top:72px;background:#ffffffd9;border:1px solid #e5e7eb;border-radius:.5rem;padding:.5rem .6rem;backdrop-filter:saturate(180%) blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:.85rem}
-    .map-controls h4{margin:.2rem 0 .4rem;font-size:.9rem}
-    .map-controls .row{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem}
-    .chip{display:inline-block;padding:.15rem .45rem;border-radius:.5rem;border:1px solid #e5e7eb;cursor:pointer;user-select:none}
-    .chip.active{background:#eef2ff;border-color:#c7d2fe}
-    .map-controls a{color:#0ea5e9;text-decoration:none}
-  </style>
-</head>
-<body>
-  <nav class="top-nav" id="itinerary-nav">
-    <a href="./" class="active">Route</a>
-    <a href="#top-spots" id="nav-top-spots">Top spots</a>
-  </nav>
+[
+  {
+    "id": "krknjasi",
+    "name": "Blaue Lagune (Krknjaši, Drvenik Veli)",
+    "lat": 43.441675,
+    "lng": 16.176139,
+    "type": "anchorage",
+    "typeLabel": "Ankerbucht · Sand",
+    "bestLight": "vor 10:00 & ab 15:30",
+    "short": "Türkis über hellem Sand – Drohne!",
+    "instagram": "Karibik-Vibes: helles, flaches Sandplateau zwischen Krknjaš Veli & Mali. Drohne top bei ruhiger See.",
+    "skipper": "Mittagsstopp. Sand/Seegras, 3–6 m; auf Sand ankern, Anker gut einfahren. Hochsaison voll → früh/spät. Offen bei N/NE; Übernachtung nicht empfohlen."
+  },
+  {
+    "id": "vinogradisce",
+    "name": "Vinogradišće (Palmižana, Pakleni)",
+    "lat": 43.157760,
+    "lng": 16.391320,
+    "type": "anchorage",
+    "typeLabel": "Bojenfeld · Beachclubs",
+    "bestLight": "Mittag bis Sunset",
+    "short": "Pinien, Stege, glasklares Wasser",
+    "instagram": "Smaragdlagune, Holzstege, Beach-Lunch-Vibes (Zori/Laganini).",
+    "skipper": "Bojen begehrt; bei W/SW lieber ACI Palmižana (Nordseite). Wassertaxi nach Hvar. Bei Jugo exponiert."
+  },
+  {
+    "id": "fortica",
+    "name": "Festung Fortica (Španjola), Hvar-Stadt",
+    "lat": 43.174760,
+    "lng": 16.441960,
+    "type": "landmark",
+    "typeLabel": "Aussicht · Landmarke",
+    "bestLight": "Golden Hour & Nacht",
+    "short": "Der Hvar-Postkartenblick",
+    "instagram": "Panorama auf Altstadt & Pakleni. Golden Hour warm; Blue Hour Leuchtkette an der Riva.",
+    "skipper": "Per Wassertaxi erreichbar; kein Ankerplatz."
+  },
+  {
+    "id": "lucice",
+    "name": "Uvala Lučice (Brač)",
+    "lat": 43.310067,
+    "lng": 16.446517,
+    "type": "anchorage",
+    "typeLabel": "Ankerbucht/Bojen",
+    "bestLight": "Nachmittag/Sunset",
+    "short": "Mehrarmige, smaragdgrüne Bucht",
+    "instagram": "Kiefern, Kalkwände, fingerförmige Arme – Abendsonne auf dem Wasser.",
+    "skipper": "Bewirtschaftete Bojen; sehr guter Schutz außer starker Bora (NE). Landleinen üblich."
+  },
+  {
+    "id": "sesula",
+    "name": "Uvala Šešula (Šolta)",
+    "lat": 43.392470,
+    "lng": 16.210070,
+    "type": "anchorage",
+    "typeLabel": "Naturhafen · Bojen",
+    "bestLight": "Sunset",
+    "short": "Tiefer Einschnitt, spiegelglatt",
+    "instagram": "Blaue Stunde mit Restaurant-Shuttle – sehr stimmungsvoll.",
+    "skipper": "Sehr guter Schutz; Bojen vom Restaurant. Anfahrt langsam; Schwojkreise beachten."
+  }
+]

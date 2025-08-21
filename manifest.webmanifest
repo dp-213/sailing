@@ -1,9 +1,22 @@
 {
-  "name": "Sailing Dalmatia",
-  "short_name": "Sailing",
+  "name": "Sailing Dalmatia Top Spots",
+  "short_name": "Top Spots",
+  "description": "Detaillierte Informationen zu Ankerbuchten, Häfen und Landmarken in Dalmatien",
   "start_url": "/sailing/topspots.html",
+  "scope": "/sailing/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0077b6",
-  "icons": []
+  "icons": [
+    {
+      "src": "/sailing/assets/icons/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/sailing/assets/icons/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

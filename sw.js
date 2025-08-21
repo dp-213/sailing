@@ -1,13 +1,34 @@
-const CACHE = "sailing-v1";
+const CACHE_NAME = 'sailing-v1';
+const BASE_PATH = '/sailing';
+
+// Assets zum Cachen
 const ASSETS = [
-  "/sailing/topspots.html",
-  "/sailing/spot.html",
-  "/sailing/css/topspots.css",
-  "/sailing/js/topspots.js",
-  "/sailing/js/spot.js",
-  "/sailing/content/map/topspots.json",
-  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  // HTML
+  `${BASE_PATH}/topspots.html`,
+  `${BASE_PATH}/spot.html`,
+  
+  // CSS
+  `${BASE_PATH}/css/topspots.css`,
+  
+  // JavaScript
+  `${BASE_PATH}/js/topspots.js`,
+  `${BASE_PATH}/js/spot.js`,
+  
+  // Daten
+  `${BASE_PATH}/content/map/topspots.json`,
+  
+  // Icons
+  `${BASE_PATH}/assets/icons/anchorage.svg`,
+  `${BASE_PATH}/assets/icons/harbor.svg`,
+  `${BASE_PATH}/assets/icons/landmark.svg`,
+  `${BASE_PATH}/assets/icons/app-icon-192.png`,
+  `${BASE_PATH}/assets/icons/app-icon-512.png`,
+  
+  // CDN-Ressourcen
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 ];
 
 self.addEventListener("install", (e) => {
