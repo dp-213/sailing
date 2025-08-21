@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spot · Sailing Dalmatia</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/topspots.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">⛵︎ Sailing Dalmatia</a>
+      <nav class="main-nav">
+        <a href="index.html">Route</a>
+        <a href="topspots.html" class="active">Top Spots</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="spot-layout">
+    <article id="spot-article"></article>
+    <aside id="spot-map" class="spot-map" aria-label="Spotkarte"></aside>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/spot.js" defer></script>
+</body>
+</html>

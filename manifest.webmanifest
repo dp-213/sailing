@@ -1,0 +1,9 @@
+{
+  "name": "Sailing Dalmatia",
+  "short_name": "Sailing",
+  "start_url": "/sailing/topspots.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0077b6",
+  "icons": []
+}

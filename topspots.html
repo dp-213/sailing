@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top Spots – Dalmatien (Insta & Skipper)</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0077b6">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/topspots.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">⛵︎ Sailing Dalmatia</a>
+      <nav class="main-nav">
+        <a href="index.html">Route</a>
+        <a href="topspots.html" class="active" aria-current="page">Top Spots</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel" aria-label="Filter & Liste">
+      <div class="filters">
+        <input id="q" type="search" placeholder="Suchen … (z.B. Hvar, Bucht)" aria-label="Suche nach Spots" />
+        <div class="chips">
+          <label><input type="checkbox" value="anchorage" checked> Ankerbucht</label>
+          <label><input type="checkbox" value="harbor" checked> Hafen</label>
+          <label><input type="checkbox" value="landmark" checked> Landmarke</label>
+        </div>
+      </div>
+      <ol id="spot-list" class="spot-list" aria-label="Ergebnisse"></ol>
+      <footer class="credits">Koordinaten & Hinweise ohne Gewähr. Vor Ort Anzeigen beachten.</footer>
+    </aside>
+
+    <section class="map-wrap">
+      <div id="map" class="map" role="application" aria-label="Karte mit Instagram-Spots"></div>
+      <div class="map-legend">
+        <img src="assets/icons/anchorage.svg" alt="" class="dot-svg"> Ankerbucht
+        <img src="assets/icons/harbor.svg" alt="" class="dot-svg"> Hafen
+        <img src="assets/icons/landmark.svg" alt="" class="dot-svg"> Landmarke
+        <a id="windy-link" target="_blank" rel="noopener">Windy öffnen</a>
+      </div>
+      <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="js/topspots.js" defer></script>
+  <script> if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sailing/sw.js'); }</script>
+</body>
+</html>
