@@ -1,228 +1,182 @@
-const DATA_URL = new URL('content/map/topspots.json?v=2025-08-21-1', document.baseURI).toString();
+(() => {
+  'use strict';
 
-// DOM Elements
-const spotList = document.getElementById('spot-list');
-const searchInput = document.getElementById('q');
-const typeFilters = document.querySelectorAll('.chips input[type="checkbox"]');
-const windyLink = document.getElementById('windy-link');
-const toastEl = document.getElementById('toast');
+  // Always fetch fresh (no SW cache); bump the v= if you change JSON
+  const DATA_URL = new URL('content/map/topspots.json?v=2025-08-22-1', document.baseURI).toString();
 
-// Leaflet Default Icon Fix für Safari
-const DefaultIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+  // --- DOM ------------------------------------------------------------------
+  const listEl   = document.getElementById('spot-list');
+  const searchEl = document.getElementById('q');
+  const typeEls  = Array.from(document.querySelectorAll('.chips input[type="checkbox"]'));
+  const windyLink= document.getElementById('windy-link');
 
-// Custom Icons für die Kartenmarker
-const createIcon = (type) => {
-  const svg = document.querySelector(`img[src="assets/icons/${type}.svg"]`).cloneNode();
-  return L.divIcon({
-    html: svg.outerHTML,
-    className: `marker-${type}`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -12]
-  });
-};
-
-// Toast-Nachricht anzeigen
-const showToast = (message, duration = 5000) => {
-  toastEl.textContent = message;
-  toastEl.hidden = false;
-  setTimeout(() => toastEl.hidden = true, duration);
-};
-
-  // Formatiere Koordinaten für Copy-Button
-const formatCoords = (lat, lng) => `${lat.toFixed(6)}°N, ${lng.toFixed(6)}°E`;
-
-function popupHtml(s) {
-  const ll = `${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}`;
-  return `
-    <div class="popup">
-      <h3>${s.name}</h3>
-      <div class="meta">${s.typeLabel || s.type || ''} ${s.bestLight ? `· ${s.bestLight}` : ''}</div>
-      <div class="sec"><strong>Für Instagram</strong><br>${s.instagram || s.insta || ''}</div>
-      <div class="sec"><strong>Skipper Tipps</strong><br>${s.skipper || ''}</div>
-      <div class="sec coords">Koordinaten: <span class="mono">${ll}</span>
-        <button class="copy" data-ll="${ll}">kopieren</button>
-      </div>
-    </div>
-  `;
-}
-
-// Rendere Popup-Inhalt
-const createPopup = (spot) => {
-  const div = document.createElement('div');
-  div.innerHTML = popupHtml(spot);
-
-  // Copy-Button Handler
-  const copyBtn = div.querySelector('.copy');
-  copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(copyBtn.dataset.coords);
-    copyBtn.textContent = 'Kopiert!';
-    setTimeout(() => copyBtn.textContent = copyBtn.dataset.coords, 2000);
-  });
-
-  return div;
-};
-
-// Rendere Listenelement
-const createListItem = (spot) => {
-  const li = document.createElement('li');
-  li.innerHTML = `
-    <div class="name">${spot.name}</div>
-    <div class="meta">${spot.typeLabel}</div>
-    <div class="meta">${spot.short}</div>
-    <a href="spot.html?id=${spot.id}" class="more">Mehr…</a>
-  `;
-  return li;
-};
-
-// Filtere Spots basierend auf Suche und Typ-Filtern
-const filterSpots = (spots, search, types) => {
-  const searchLower = search.toLowerCase();
-  return spots.filter(spot => {
-    const matchesSearch = !search || 
-      spot.name.toLowerCase().includes(searchLower) || 
-      spot.short.toLowerCase().includes(searchLower);
-    const matchesType = types.includes(spot.type);
-    return matchesSearch && matchesType;
-  });
-};
-
-// Aktualisiere Windy-Link
-const updateWindyLink = (map) => {
-  const center = map.getCenter();
-  windyLink.href = `https://www.windy.com/${center.lat.toFixed(3)}/${center.lng.toFixed(3)}?2025082400,${center.lat.toFixed(3)},${center.lng.toFixed(3)},10`;
-};
-
-// Hauptfunktion
-// State
-let spots = [];
-let activeSpot = null;
-let map = null;
-
-// Load and initialize
-async function init() {
-  try {
-    spots = await loadSpots();
-    console.log('[TopSpots] loaded', spots.length, 'spots from', DATA_URL);
-    initMap();
-    bindSearch();
-    bindFilters();
-    renderSpots();
-  } catch (error) {
-    console.error('Fehler beim Laden der Spots:', error);
-    const toast = document.createElement('div');
-    toast.className = 'toast error';
-    toast.innerHTML = `
-      Fehler beim Laden der Spots.
-      <button onclick="init()">Erneut laden</button>
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
+  // Counter (insert above list)
+  let counterEl = document.getElementById('spot-counter');
+  if (!counterEl) {
+    counterEl = document.createElement('div');
+    counterEl.id = 'spot-counter';
+    counterEl.style.cssText = 'padding:.5rem 1rem;color:#374151;font-weight:600';
+    counterEl.textContent = 'Spots: –';
+    listEl.parentElement.insertBefore(counterEl, listEl);
   }
-}
 
-async function loadSpots() {
-  const res = await fetch(DATA_URL, { cache: 'no-store' });
-  if(!res.ok) throw new Error(`HTTP ${res.status}`);
-  const raw = await res.json();
-  const spots = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.spots) ? raw.spots : []);
-  return spots.filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
-}
-
-// Initialisiere Karte
-function initMap() {
-  map = L.map('map').setView([54.5, 11], 8);
-  
+  // --- Map ------------------------------------------------------------------
+  // Center on Central Dalmatia (not the Baltic)
+  const map = L.map('map', { zoomControl: true }).setView([43.32, 16.45], 9);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  map.on('moveend', () => updateWindyLink(map));
-}
-
-// Suchfunktionalität
-function bindSearch() {
-  let debounceTimeout;
-  searchInput.addEventListener('input', (e) => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-      renderSpots(e.target.value);
-    }, 300);
+  // iOS/Safari: make sure default marker icons are set explicitly
+  const DefaultIcon = L.icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize: [25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41]
   });
-}
+  L.Marker.prototype.options.icon = DefaultIcon;
 
-// Filter-Funktionalität
-function bindFilters() {
-  typeFilters.forEach(filter => {
-    filter.addEventListener('change', () => {
-      renderSpots(searchInput.value);
-    });
-  });
-}
+  // Simple colored dot icons (no DOM cloning required)
+  const iconDot = (cls) => L.divIcon({ className: '', html: `<span class="dot ${cls}"></span>`, iconSize: [12,12] });
+  const icons = { anchorage: iconDot('dot-a'), harbor: iconDot('dot-h'), landmark: iconDot('dot-l') };
 
-// Rendere gefilterte Spots
-function renderSpots(search = '') {
-  // Aktiviere standardmäßig alle Filter beim ersten Aufruf
-  if (!document.querySelector('.chips input:checked')) {
-    typeFilters.forEach(f => f.checked = true);
+  // --- State ----------------------------------------------------------------
+  let allSpots = [];
+  const markers = [];
+  const markerById = new Map();
+
+  // Valid Dalmatia bounds guard (filters out bad coords)
+  const validLatLng = (lat, lng) => Number.isFinite(lat) && Number.isFinite(lng) && lat > 42.4 && lat < 44.2 && lng > 15.6 && lng < 17.5;
+
+  // --- UI helpers -----------------------------------------------------------
+  function popupHtml(s) {
+    const ll = `${(+s.lat).toFixed(6)}, ${(+s.lng).toFixed(6)}`;
+    const typeLabel = s.typeLabel || s.type || '';
+    const best = s.bestLight ? ` · Bestes Licht: ${s.bestLight}` : '';
+    const insta = s.instagram || s.insta || '—';
+    const skip  = s.skipper || '—';
+    return `
+      <div class="popup">
+        <h3>${s.name || 'Unbenannter Spot'}</h3>
+        <div class="meta">${typeLabel}${best}</div>
+        <div class="sec"><strong>Für Instagram</strong><br>${insta}</div>
+        <div class="sec"><strong>Skipper Tipps</strong><br>${skip}</div>
+        <div class="sec coords">
+          Koordinaten: <span class="mono">${ll}</span>
+          <button class="copy" data-ll="${ll}">kopieren</button>
+          <a class="copy" style="margin-left:.5rem" target="_blank" rel="noopener" href="https://maps.google.com/?q=${ll}">Google Maps</a>
+        </div>
+      </div>`;
   }
-  
-  const activeTypes = Array.from(typeFilters)
-    .filter(f => f.checked)
-    .map(f => f.value);
 
-  const filteredSpots = filterSpots(spots, search, activeTypes);
-  
-  // Liste leeren und neu befüllen
-  spotList.innerHTML = '';
-  
-  // Zähler anzeigen
-  const counter = document.createElement('div');
-  counter.className = 'spot-counter';
-  counter.textContent = `Spots: ${filteredSpots.length}`;
-  spotList.appendChild(counter);
-  
-  if (filteredSpots.length === 0) {
-    const noResults = document.createElement('div');
-    noResults.className = 'no-results';
-    noResults.innerHTML = `
-      Keine Treffer.
-      <button onclick="resetFilters()">Filter zurücksetzen</button>
+  function makeListItem(s) {
+    const li = document.createElement('li');
+    const meta = [s.typeLabel || s.type || '', s.short || ''].filter(Boolean).join(' · ');
+    li.innerHTML = `
+      <div class="name">${s.name || 'Unbenannter Spot'}</div>
+      <div class="meta">${meta || '&nbsp;'}</div>
+      <a href="spot.html?id=${encodeURIComponent(s.id)}" class="more">Mehr…</a>
     `;
-    spotList.appendChild(noResults);
-    return;
+    return li;
   }
-  
-  filteredSpots.forEach(spot => {
-    const li = createListItem(spot);
-    li.addEventListener('click', () => {
-      activeSpot?.marker.closePopup();
-      spot.marker.openPopup();
-      activeSpot = spot;
+
+  function clearMarkers() {
+    markers.forEach(m => map.removeLayer(m));
+    markers.length = 0;
+    markerById.clear();
+  }
+
+  function render(spots) {
+    clearMarkers();
+    listEl.innerHTML = '';
+    counterEl.textContent = `Spots: ${spots.length}`;
+
+    const bounds = [];
+    spots.forEach(s => {
+      const lat = +s.lat, lng = +s.lng;
+      if (!validLatLng(lat, lng)) { console.warn('[TopSpots] invalid coords', s.name, lat, lng); return; }
+
+      const type = (s.type || 'anchorage');
+      const marker = L.marker([lat, lng], { icon: icons[type] || DefaultIcon })
+        .bindPopup(popupHtml(s))
+        .addTo(map);
+
+      markers.push(marker);
+      markerById.set(s.id, marker);
+      bounds.push([lat, lng]);
+
+      const li = makeListItem(s);
+      li.addEventListener('click', (ev) => {
+        if (ev.target.closest('.more')) return; // let the link navigate
+        map.setView([lat, lng], 14);
+        marker.openPopup();
+      });
+      listEl.appendChild(li);
     });
-    spotList.appendChild(li);
-  });
 
-  // Marker auf der Karte aktualisieren
-  spots.forEach(spot => {
-    if (!spot.marker) {
-      spot.marker = L.marker([spot.lat, spot.lng], {
-        icon: createIcon(spot.type)
-      })
-      .bindPopup(() => createPopup(spot))
-      .addTo(map);
+    if (bounds.length) {
+      map.fitBounds(L.latLngBounds(bounds).pad(0.12));
+    } else {
+      map.setView([43.32, 16.45], 9);
     }
-    spot.marker.setOpacity(filteredSpots.includes(spot) ? 1 : 0.3);
-  });
-}
+  }
 
-// Start
-init();
+  function applyFilters() {
+    const query = (searchEl?.value || '').trim().toLowerCase();
+    const allowed = new Set(typeEls.filter(c => c.checked).map(c => c.value));
+    const filtered = allSpots.filter(s =>
+      allowed.has(s.type || 'anchorage') && (
+        !query ||
+        (s.name || '').toLowerCase().includes(query) ||
+        (s.short || '').toLowerCase().includes(query) ||
+        (s.island || '').toLowerCase().includes(query) ||
+        (s.typeLabel || s.type || '').toLowerCase().includes(query)
+      )
+    );
+    render(filtered);
+    if (!filtered.length) console.warn('[TopSpots] No results for query:', query, 'allowed:', [...allowed]);
+  }
+
+  // Windy link follows map center
+  function updateWindyLink() {
+    if (!windyLink) return;
+    const c = map.getCenter();
+    windyLink.href = `https://www.windy.com/${c.lat.toFixed(3)}/${c.lng.toFixed(3)}?2025082400,${c.lat.toFixed(3)},${c.lng.toFixed(3)},10`;
+  }
+  map.on('moveend', updateWindyLink);
+  updateWindyLink();
+
+  // Copy (event delegation)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy');
+    if (!btn || !btn.dataset.ll) return;
+    navigator.clipboard?.writeText(btn.dataset.ll).then(() => {
+      const old = btn.textContent;
+      btn.textContent = 'kopiert ✓';
+      setTimeout(() => { btn.textContent = old || 'kopieren'; }, 1100);
+    }).catch(() => {});
+  });
+
+  // --- Data load ------------------------------------------------------------
+  (async function init() {
+    try {
+      const res = await fetch(DATA_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const raw = await res.json();
+      const spots = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.spots) ? raw.spots : []);
+      allSpots = (spots || []).filter(s => Number.isFinite(+s.lat) && Number.isFinite(+s.lng) && s.id && s.name);
+      // Ensure filters are initially all enabled
+      typeEls.forEach(c => c.checked = true);
+      applyFilters();
+      console.log('[TopSpots] loaded', allSpots.length, 'from', DATA_URL);
+    } catch (err) {
+      console.error('[TopSpots] load error', err);
+      listEl.innerHTML = '<li style="padding:1rem;color:#b91c1c">Konnte Spots nicht laden. Prüfe content/map/topspots.json</li>';
+    }
+  })();
+
+  // Bind search + filter events
+  searchEl?.addEventListener('input', () => { applyFilters(); });
+  typeEls.forEach(c => c.addEventListener('change', applyFilters));
+
+})();
