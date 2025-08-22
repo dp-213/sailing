@@ -1,8 +1,6 @@
-(() => {
-  'use strict';
-
-  const params = new URLSearchParams(location.search);
-  const id = params.get('id');
+// Konstanten & Konfiguration
+const DATA_URL = new URL('content/map/topspots.json?v=2025-08-22-3', document.baseURI).toString();
+const FILTER_STORAGE_KEY = 'topspots-filters';
 
   // Keep in sync with list page; include fallbacks to avoid SW/cache/path issues
   const DATA_CANDIDATES = [

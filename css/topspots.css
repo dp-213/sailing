@@ -87,17 +87,42 @@ body {
 }
 @media (max-width: 768px) {
   .layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
+    grid-template-columns: 45% 55%;
   }
-  .panel {
-    grid-row: 2;
-    border-right: none;
-    border-top: 1px solid var(--border);
+  .spot-list {
+    overscroll-behavior: contain;
+  }
+  .spot-card {
+    min-height: 84px;
+    font-size: 110%;
+    padding: 1rem;
   }
   .chips label,
   .filters input[type=search],
   .spot-list a,
+  .spot-list button {
+    min-height: 44px;
+    padding: 12px;
+    touch-action: manipulation;
+  }
+}
+
+.marker-anchorage,
+.marker-harbor,
+.marker-landmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
+.marker-anchorage img { filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%); }
+.marker-harbor img { filter: invert(65%) sepia(95%) saturate(342%) hue-rotate(6deg) brightness(89%) contrast(92%); }
+.marker-landmark img { filter: invert(19%) sepia(89%) saturate(2164%) hue-rotate(234deg) brightness(98%) contrast(94%); }
   .spot-list button {
     min-height: 44px;
     padding: 12px;
@@ -355,4 +380,28 @@ body {
   .map {
     min-height: 50vh;
   }
+}
+
+/* Custom Marker Styles */
+.marker-anchorage,
+.marker-harbor,
+.marker-landmark {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3) !important;
+}
+
+.marker-anchorage img {
+  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+}
+.marker-harbor img {
+  filter: invert(65%) sepia(95%) saturate(342%) hue-rotate(6deg) brightness(89%) contrast(92%);
+}
+.marker-landmark img {
+  filter: invert(19%) sepia(89%) saturate(2164%) hue-rotate(234deg) brightness(98%) contrast(94%);
 }
