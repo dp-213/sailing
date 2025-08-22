@@ -2,8 +2,32 @@
 const DATA_URL = new URL('content/map/topspots.json?v=2025-08-22-3', document.baseURI).toString();
 const FILTER_STORAGE_KEY = 'topspots-filters';
 
-  // Keep in sync with list page; include fallbacks to avoid SW/cache/path issues
-  const DATA_CANDIDATES = [
+// DOM Elements
+const spotList = document.getElementById('spot-list');
+const searchInput = document.getElementById('q');
+const typeFilters = document.querySelectorAll('.chips input[type="checkbox"]');
+const windyLink = document.getElementById('windy-link');
+const toastEl = document.getElementById('toast');
+
+// State
+let spots = [];
+let activeSpot = null;
+let map = null;
+
+// Filter-State aus localStorage laden
+function loadFilterState() {
+  try {
+    const saved = localStorage.getItem(FILTER_STORAGE_KEY);
+    if (saved) {
+      const state = JSON.parse(saved);
+      typeFilters.forEach(cb => {
+        cb.checked = state[cb.value] ?? true;
+      });
+    }
+  } catch (e) {
+    console.warn('Filter-State konnte nicht geladen werden:', e);
+  }
+}
     new URL('content/map/topspots.json?v=2025-08-22-3', document.baseURI).toString(),
     new URL('/sailing/content/map/topspots.json?v=2025-08-22-3', location.origin).toString(),
     new URL('content/map/topspots.json', document.baseURI).toString(),
