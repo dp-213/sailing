@@ -70,6 +70,21 @@ body {
   grid-template-columns: 360px 1fr;
   min-height: calc(100vh - 58px);
 }
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 45% 55%;
+  }
+  .spot-list {
+    overscroll-behavior: contain;
+  }
+  .spot-card {
+    min-height: 84px;
+    font-size: 110%;
+    padding: 1rem;
+    scroll-snap-align: start;
+  }
+}
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;

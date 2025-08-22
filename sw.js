@@ -1,7 +1,7 @@
-const CACHE_NAME = 'sailing-v4';
+const CACHE_NAME = 'sailing-v3';
 const BASE_PATH = '/sailing';
 
-// Assets zum Cachen (ohne JSON-Daten)
+// Assets zum Cachen
 const PRECACHE_ASSETS = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/index.html`,
@@ -10,11 +10,10 @@ const PRECACHE_ASSETS = [
   `${BASE_PATH}/css/topspots.css`,
   `${BASE_PATH}/js/topspots.js`,
   `${BASE_PATH}/js/spot.js`,
+  `${BASE_PATH}/content/map/topspots.json`,
   `${BASE_PATH}/assets/icons/anchorage.svg`,
   `${BASE_PATH}/assets/icons/harbor.svg`,
-  `${BASE_PATH}/assets/icons/landmark.svg`,
-  `${BASE_PATH}/assets/icons/app-icon-192.png`,
-  `${BASE_PATH}/assets/icons/app-icon-512.png`
+  `${BASE_PATH}/assets/icons/landmark.svg`
 ];
 
 self.addEventListener('install', event => {
