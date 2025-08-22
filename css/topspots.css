@@ -316,3 +316,28 @@ body {
   font-size: 1rem;
   margin-top: 1rem;
 }
+
+/* Marker dots for legend and map */
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0 .25rem 0 .1rem;
+  vertical-align: middle;
+}
+.dot-a { background: var(--dot-a); }
+.dot-h { background: var(--dot-h); }
+.dot-l { background: var(--dot-l); }
+
+/* Improve momentum scrolling on iOS */
+.spot-list {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile map safeguard */
+@media (max-width: 768px) {
+  .map {
+    min-height: 50vh;
+  }
+}
